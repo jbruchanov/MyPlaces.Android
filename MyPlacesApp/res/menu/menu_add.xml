@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item android:id="@+id/muAddStar" android:title="@string/lblStar" android:icon="@drawable/ico_star"/>
+    <item android:id="@+id/muAddMapItem" android:title="@string/lblMapItem" android:icon="@drawable/ico_beer"/>
+    
+
+</menu>

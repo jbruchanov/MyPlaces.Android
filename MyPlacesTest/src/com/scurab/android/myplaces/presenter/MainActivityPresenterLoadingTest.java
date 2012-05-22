@@ -1,0 +1,136 @@
+package com.scurab.android.myplaces.presenter;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.google.android.maps.Overlay;
+import com.scurab.android.myplaces.activity.MainActivity;
+import com.scurab.android.myplaces.datamodel.MapItem;
+import com.scurab.android.myplaces.datamodel.Star;
+import com.scurab.android.myplaces.server.MockServerConnection;
+import com.scurab.android.myplaces.server.ServerConnection;
+
+import android.content.Context;
+import android.test.AndroidTestCase;
+import android.util.Log;
+
+public class MainActivityPresenterLoadingTest extends AndroidTestCase
+{
+	private volatile MockMainActivityPresenter mmap;
+	private volatile MockServerConnection msc;
+	boolean checkedStars = false;
+	boolean checkedMapItems = false;
+	boolean checkedLoadedItemsToMap = false;
+	@Override
+	protected void setUp() throws Exception
+	{
+		super.setUp();
+		msc = new MockServerConnection("");
+		checkedStars = false;
+		checkedMapItems = false;
+		checkedLoadedItemsToMap = false;
+	}
+
+	public void testInitLoadStars() throws InterruptedException
+	{
+		mmap = new MockMainActivityPresenter(new MockMainActivity(mContext));
+		msc.downloadCount = 1;
+		Log.v("testInitLoadStars", "Waiting to interrupt by another thread");
+		for(int i = 0;i<Integer.MAX_VALUE && !checkedStars;i++)		
+			Log.v("testInitLoadStars", i + " waiting");
+		assertTrue(checkedStars);			
+	}
+
+	public void testInitLoadMapItems() throws InterruptedException
+	{
+		mmap = new MockMainActivityPresenter(new MockMainActivity(mContext));
+		msc.downloadCount = 1;
+		Log.v("testInitLoadStars", "Waiting to interrupt by another thread");
+		for(int i = 0;i<Integer.MAX_VALUE && !checkedMapItems;i++)		
+			Log.v("testInitLoadMapItems", i + " waiting");
+		assertTrue(checkedMapItems);			
+	}
+	
+	public void testLoadToListOverlaysStars()
+	{
+		mmap = new MockMainActivityPresenter(new MockMainActivity(mContext));
+		msc.downloadCount = 1;
+		Log.v("testLoadToListOverlaysStars", "Waiting to interrupt by another thread");
+		for(int i = 0;i<Integer.MAX_VALUE && !checkedLoadedItemsToMap;i++)		
+			Log.v("testLoadToListOverlaysMap", i + " waiting");
+		assertTrue(checkedLoadedItemsToMap);
+		assertEquals(msc.downloadCount, mmap.getOverlayList().size());
+	}
+	
+	public void testLoadToListOverlaysMapItems()
+	{
+		mmap = new MockMainActivityPresenter(new MockMainActivity(mContext));
+		msc.downloadCount = 1;
+		Log.v("testLoadToListOverlaysStars", "Waiting to interrupt by another thread");
+		for(int i = 0;i<Integer.MAX_VALUE && !checkedLoadedItemsToMap;i++)		
+			Log.v("testLoadToListOverlaysMapItems", i + " waiting");
+		assertTrue(checkedLoadedItemsToMap);
+		assertEquals(msc.downloadCount, mmap.getOverlayList().size());
+	}
+	
+	private class MockMainActivityPresenter extends MainActivityPresenter
+	{
+		List<Overlay> overlays;
+		public MockMainActivityPresenter(MainActivity context)
+		{
+			super(context);
+		}
+		
+		@Override
+		public ServerConnection getServerConnection()
+		{
+			return msc;
+		}		
+		
+		@Override
+		public void onLoadedStars(Star[] stars)
+		{
+			assertNotNull(stars);
+			if(stars.length == 0)
+			{
+				Star s = new Star();
+				s.setX(5);s.setY(5);
+				stars = new Star[] {s};
+			}
+			super.onLoadedStars(stars);
+			checkedStars = true;
+			checkedLoadedItemsToMap = true;
+		}
+		
+		@Override
+		public void onLoadedMapItems(MapItem[] items) 
+		{
+			assertNotNull(items);		
+			if(items.length == 0)
+			{
+				MapItem s = new MapItem();
+				s.setX(5);s.setY(5);
+				items = new MapItem[] {s};
+			}
+			super.onLoadedMapItems(items);
+			checkedMapItems = true;
+			checkedLoadedItemsToMap = true;
+		};
+		
+		@Override
+		protected List<Overlay> getOverlayList()
+		{
+			if(overlays == null)
+				overlays = new ArrayList<Overlay>();
+			return overlays;
+		}
+	}
+	
+	private class MockMainActivity extends com.scurab.android.myplaces.activity.MainActivity
+	{
+		public MockMainActivity(Context c)
+		{
+			attachBaseContext(c);
+		}
+	}
+}

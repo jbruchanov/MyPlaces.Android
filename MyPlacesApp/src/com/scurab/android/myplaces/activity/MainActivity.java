@@ -1,20 +1,13 @@
 package com.scurab.android.myplaces.activity;
 
-import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
 import com.scurab.android.myplaces.R;
-import com.scurab.android.myplaces.R.layout;
 import com.scurab.android.myplaces.presenter.MainActivityPresenter;
 
-import android.app.ActionBar;
-import android.app.Activity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MotionEvent;
 import android.view.View;
 
-public class MainActivity extends MapActivity {
+public class MainActivity extends BaseMapActivity {
 	
 	private MapView mMapView;
 	private View mContentView;
@@ -27,7 +20,7 @@ public class MainActivity extends MapActivity {
     
     private void init()
     {
-    	setContentView(getMainContentView());
+    	setContentView(getContentView());
     	mMapView = (MapView)findViewById(R.id.mapView);
     }
     
@@ -36,7 +29,8 @@ public class MainActivity extends MapActivity {
     	return R.layout.main;
     }
     
-    protected View getMainContentView()
+    @Override
+	public View getContentView()
     {
     	if(mContentView == null)
     		mContentView = View.inflate(this, getContentViewResId(), null);
@@ -53,11 +47,5 @@ public class MainActivity extends MapActivity {
 	{
 		return mMapView;
 	}
-	
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-	    MenuInflater inflater = getMenuInflater();
-	    inflater.inflate(R.menu.main_activity, menu);
-	    return true;
-	}
+
 }

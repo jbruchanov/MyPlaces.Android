@@ -1,9 +1,6 @@
 package com.scurab.android.myplaces.server;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.data.Protocol;

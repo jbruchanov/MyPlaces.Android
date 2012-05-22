@@ -5,7 +5,6 @@ import com.scurab.android.myplaces.server.ServerConnection;
 import com.scurab.android.myplaces.util.PropertyProvider;
 
 import android.app.Activity;
-import android.content.Context;
 import android.widget.Toast;
 
 public abstract class BasePresenter

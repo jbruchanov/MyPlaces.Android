@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import android.text.Html;
-
 import com.scurab.android.myplaces.datamodel.MapItem;
 import com.scurab.android.myplaces.datamodel.Star;
 

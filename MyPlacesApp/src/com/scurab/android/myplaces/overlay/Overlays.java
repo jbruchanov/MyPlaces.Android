@@ -1,19 +1,12 @@
 package com.scurab.android.myplaces.overlay;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.widget.Toast;
 
-import com.google.android.maps.GeoPoint;
 import com.google.android.maps.ItemizedOverlay;
-import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
-import com.scurab.android.myplaces.R;
-import com.scurab.android.myplaces.datamodel.Star;
 import com.scurab.android.myplaces.interfaces.HasDescription;
 
 public class Overlays<T extends HasDescription> extends ItemizedOverlay<OverlayItem> 
