@@ -151,13 +151,12 @@ public class MainActivityPresenter extends BasePresenter implements ActivityOpti
 			{
 				showSmileyDialog(location);
 			}
-
 			setState(STATE_DEFAULT);
 		}
 		return result;
 	}
 	
-	private void showSmileyDialog(GeoPoint location)
+	protected void showSmileyDialog(GeoPoint location)
 	{
 		SmileyDialog sd = new SmileyDialog(mContext, location);
 		sd.setOnClickListener(new Dialog.OnClickListener()
@@ -172,6 +171,11 @@ public class MainActivityPresenter extends BasePresenter implements ActivityOpti
 		});
 		sd.setOnCancelListener(new Dialog.OnCancelListener(){@Override public void onCancel(DialogInterface dialog){setState(STATE_DEFAULT);}});
 		sd.show();
+	}
+	
+	public void onAddNewStar(GeoPoint location, int starIconId)
+	{
+		setState(STATE_DEFAULT);
 	}
 	
 	/**

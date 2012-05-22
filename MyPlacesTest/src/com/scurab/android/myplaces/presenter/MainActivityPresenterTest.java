@@ -46,6 +46,12 @@ public class MainActivityPresenterTest extends AndroidTestCase
 		{
 			return new MockServerConnection("");
 		}
+		
+		@Override
+		protected void showSmileyDialog(GeoPoint location)
+		{
+			onAddNewStar(location,0);
+		}
 	}
 	
 	private class MockMainActivity extends com.scurab.android.myplaces.activity.MainActivity
