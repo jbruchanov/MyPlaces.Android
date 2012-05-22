@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<resources>
+    <string name="lblStar">Star</string>
+    <string name="lblMapItem">Map item</string>
+    <string name="lblChooseStar">Choose star</string>
+</resources>
