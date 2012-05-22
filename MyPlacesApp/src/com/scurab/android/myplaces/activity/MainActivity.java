@@ -15,7 +15,6 @@ import android.view.MotionEvent;
 import android.view.View;
 
 public class MainActivity extends MapActivity {
-    /** Called when the activity is first created. */
 	
 	private MapView mMapView;
 	private View mContentView;
@@ -37,7 +36,7 @@ public class MainActivity extends MapActivity {
     	return R.layout.main;
     }
     
-    private View getMainContentView()
+    protected View getMainContentView()
     {
     	if(mContentView == null)
     		mContentView = View.inflate(this, getContentViewResId(), null);

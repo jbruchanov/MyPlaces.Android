@@ -35,7 +35,6 @@ public class MainActivityPresenter extends BasePresenter
 	{
 		onLoadingStars();
 		onLoadingMapItems();
-		
 	}
 	
 	public void onLoadingStars()
@@ -75,9 +74,14 @@ public class MainActivityPresenter extends BasePresenter
 		}
 	}
 	
+	protected List<Overlay> getOverlayList()
+	{
+		return mContext.getMapView().getOverlays();
+	}
+	
 	public void onLoadedStars(Star[] stars)
 	{
-		List<Overlay> mapOverlays = mContext.getMapView().getOverlays();
+		List<Overlay> mapOverlays = getOverlayList();
 		Overlays<Star> itemizedoverlay = new Overlays<Star>(mContext,R.drawable.ico_star);
 		for(Star s : stars)
 		{
@@ -104,23 +108,16 @@ public class MainActivityPresenter extends BasePresenter
 	
 	public void onLoadedMapItems(MapItem[] items)
 	{
-		List<Overlay> mapOverlays = mContext.getMapView().getOverlays();
+		List<Overlay> mapOverlays = getOverlayList();
 		Overlays<MapItem> itemizedoverlay = new Overlays<MapItem>(mContext,R.drawable.ic_launcher);
 		Resources res = mContext.getResources();
-		int i = 0;
 		for(MapItem s : items)
 		{
 			int lat = (int)(s.getY() * COORD_HELP_MAPPER);
 			int lng = (int)(s.getX() * COORD_HELP_MAPPER);
 			MyPlaceOverlayItem<MapItem> oi = new MyPlaceOverlayItem<MapItem>(new GeoPoint(lat, lng), s);
-			Drawable d = null;
-			if(i++ % 2 == 0)
-				d = res.getDrawable(R.drawable.ico_beer);			
-			else
-				d = res.getDrawable(R.drawable.ico_drink);			
-			itemizedoverlay.addOverlay(oi,d);
+			itemizedoverlay.addOverlay(oi,res.getDrawable(R.drawable.ico_drink));
 		}
 		mapOverlays.add(itemizedoverlay);
-		
 	}
 }

@@ -1,5 +1,8 @@
 package com.scurab.android.myplaces.presenter;
 
+import com.scurab.android.myplaces.server.MockServerConnection;
+import com.scurab.android.myplaces.server.ServerConnection;
+
 import android.app.Activity;
 import android.content.Context;
 import android.test.AndroidTestCase;
@@ -26,8 +29,8 @@ public class BasePresenterTest extends AndroidTestCase
 		{
 			attachBaseContext(newBase);
 		}
-		
 	}
+	
 	private class MockBasePresenter extends BasePresenter
 	{
 
