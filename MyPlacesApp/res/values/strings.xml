@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<resources>
+    <string name="hello">Hello World, MainActivity!</string>
+    <string name="app_name">MyPlacesApp</string>
+    
+    <string name="MAP_KEY_DEBUG">0zaMruQCEG45rNlv_yDsCSm3SKJ2BTnMOeP-H3w</string>    
+</resources>
