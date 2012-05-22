@@ -2,6 +2,7 @@ package com.scurab.android.myplaces.datamodel;
 
 import java.io.Serializable;
 
+import com.scurab.android.myplaces.R;
 import com.scurab.android.myplaces.interfaces.HasDescription;
 import com.scurab.android.myplaces.util.AppUtils;
 
@@ -72,29 +73,34 @@ public class Star implements Serializable, HasDescription
 		return getTitle() + " " + getType();
 	}
 	
-//	private String getStarUrl(String type)
-//	{
-//		String result = "";
-//		if(type.equals("10"))
-//			result = AppConstants.MediumIcons.ICO_STAR;
-//		else if(type.equals("11"))
-//			result = AppConstants.MediumIcons.ICO_CAFE;
-//		else if(type.equals("12"))
-//			result = AppConstants.MediumIcons.ICO_DRINK;
-//		else if(type.equals("13"))
-//			result = AppConstants.MediumIcons.ICO_WINE;
-//		else if(type.equals("14"))
-//			result = AppConstants.MediumIcons.ICO_SEARCH;
-//		else if(type.equals("20"))
-//			result = AppConstants.MediumIcons.ICO_SMILE_HAPPY;
-//		else if(type.equals("21"))
-//			result = AppConstants.MediumIcons.ICO_SMILE_LICK;
-//		else if(type.equals("22"))
-//			result = AppConstants.MediumIcons.ICO_SMILE_NEUTRAL;
-//		else if(type.equals("23"))
-//			result = AppConstants.MediumIcons.ICO_SMILE_UNHAPPY;
-//		else if(type.equals("24"))
-//			result = AppConstants.MediumIcons.ICO_SMILE_VERYHAPPY;
-//		return result;
-//	}
+	public static int getStarIconResId(String type)
+	{
+		int result = 0;
+		if(type.equals("10"))
+			result = R.drawable.ico_star;
+		else if(type.equals("11"))
+			result = R.drawable.ico_cafe;
+		else if(type.equals("12"))
+			result = R.drawable.ico_drink;
+		else if(type.equals("13"))
+			result = R.drawable.ico_wine;
+		else if(type.equals("14"))
+			result = R.drawable.ico_search;
+		else if(type.equals("20"))
+			result = R.drawable.ico_smile_happy;
+		else if(type.equals("21"))
+			result = R.drawable.ico_smile_lick;
+		else if(type.equals("22"))
+			result = R.drawable.ico_smile_neutral;
+		else if(type.equals("23"))
+			result = R.drawable.ico_smile_unhappy;
+		else if(type.equals("24"))
+			result = R.drawable.ico_smile_veryhappy;
+		return result;
+	}
+	
+	public int getStarIconResId()
+	{
+		return getStarIconResId(getType());
+	}
 }

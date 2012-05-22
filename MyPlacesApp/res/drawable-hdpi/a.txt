@@ -1,0 +1,26 @@
+ Volume in drive C is Win7Boot
+ Volume Serial Number is 34D3-4EFE
+
+ Directory of C:\Projects\eclipse-workspace-j2ee\AML\war\pics\icons_big
+
+15.01.2012  16:50    <DIR>          .
+15.01.2012  16:50    <DIR>          ..
+15.01.2012  16:50                 0 a.txt
+15.01.2012  16:49                41 from.TXT
+19.10.2008  19:57             8ÿ676 ico_add.png
+19.10.2008  19:58            11ÿ590 ico_alert.png
+19.10.2008  20:04            21ÿ439 ico_download.png
+19.10.2008  19:59            22ÿ273 ico_error.png
+19.10.2008  20:09            24ÿ165 ico_info.png
+19.10.2008  20:04            23ÿ285 ico_logoff.png
+22.09.2008  19:02            43ÿ083 ico_music.png
+19.10.2008  23:19            24ÿ471 ico_public.png
+19.10.2008  19:59            20ÿ358 ico_refresh.png
+19.10.2008  20:03            31ÿ513 ico_restart.png
+04.10.2008  08:29            20ÿ775 ico_search.png
+19.10.2008  20:01            25ÿ842 ico_select.png
+19.10.2008  20:03            26ÿ474 ico_shutdown.png
+19.10.2008  20:04            25ÿ934 ico_standby.png
+19.10.2008  20:06            36ÿ113 ico_stop.png
+              17 File(s)        366ÿ032 bytes
+               2 Dir(s)  21ÿ590ÿ663ÿ168 bytes free

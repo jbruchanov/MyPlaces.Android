@@ -3,6 +3,7 @@ package com.scurab.android.myplaces.datamodel;
 import java.io.Serializable;
 import java.util.List;
 
+import com.scurab.android.myplaces.R;
 import com.scurab.android.myplaces.interfaces.HasDescription;
 import com.scurab.android.myplaces.util.AppUtils;
 
@@ -142,35 +143,35 @@ public class MapItem implements Serializable , HasDescription
 		this.country = country;
 	}
 
-//	public String getIconUrl()
-//	{
-//		String t = getType();
-//		if(t == null)
-//			return AppConstants.MediumIcons.ICO_BEER;
-//		else
-//			t = t.toLowerCase();
-//		
-//		if(t.equals("hospoda"))
-//			return AppConstants.MediumIcons.ICO_BEER;
-//		else if(t.equals("bar"))
-//			return AppConstants.MediumIcons.ICO_DRINK;
-//		else if(t.equals("kav�rna"))
-//			return AppConstants.MediumIcons.ICO_CAFE;
-//		else if(t.equals("caf�"))
-//			return AppConstants.MediumIcons.ICO_CAFE;
-//		else if(t.equals("restaurace"))
-//			return AppConstants.MediumIcons.ICO_RESTAURANT;
-//		else if(t.equals("pizzerie"))
-//			return AppConstants.MediumIcons.ICO_PIZZA;
-//		else if(t.equals("fastfood"))
-//			return AppConstants.MediumIcons.ICO_FASTFOOD;
-//		else if(t.equals("club"))
-//			return AppConstants.MediumIcons.ICO_MUSIC;
-//		else if(t.equals("zahr�dka"))
-//			return AppConstants.MediumIcons.ICO_PATIO;
-//		else
-//			return AppConstants.MediumIcons.ICO_SEARCH;
-//	}
+	public int getIconResId()
+	{
+		String t = getType();
+		if(t == null)
+			return R.drawable.ico_beer;
+		else
+			t = t.toLowerCase();
+		
+		if(t.equals("hospoda"))
+			return R.drawable.ico_beer;
+		else if(t.equals("bar"))
+			return R.drawable.ico_drink;
+		else if(t.equals("kavárna"))
+			return R.drawable.ico_cafe;
+		else if(t.equals("café"))
+			return R.drawable.ico_cafe;
+		else if(t.equals("restaurace"))
+			return R.drawable.ico_restaurant;
+		else if(t.equals("pizzerie"))
+			return R.drawable.ico_pizza;
+		else if(t.equals("fastfood"))
+			return R.drawable.ico_fastfood;
+		else if(t.equals("club"))
+			return R.drawable.ico_music;
+		else if(t.equals("zahrádka"))
+			return R.drawable.ico_patio;
+		else
+			return R.drawable.ico_search;
+	}
 	
 	public String getTitle()
 	{
