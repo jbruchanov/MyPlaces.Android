@@ -9,7 +9,7 @@ import com.google.android.maps.ItemizedOverlay;
 import com.google.android.maps.OverlayItem;
 import com.scurab.android.myplaces.interfaces.HasDescription;
 
-public class Overlays<T extends HasDescription> extends ItemizedOverlay<OverlayItem> 
+public class Overlays<T> extends ItemizedOverlay<OverlayItem> 
 {
 	private ArrayList<MyPlaceOverlayItem<T>> mOverlays = new ArrayList<MyPlaceOverlayItem<T>>();
 	private Context mContext;
@@ -52,8 +52,8 @@ public class Overlays<T extends HasDescription> extends ItemizedOverlay<OverlayI
 	@Override
 	protected boolean onTap(int arg0)
 	{
-		HasDescription h = mOverlays.get(arg0).getObject();
-		String desc = h.getDescription();
+		Object h = mOverlays.get(arg0).getObject();
+		String desc = h.toString();
 		Toast.makeText(mContext, desc, Toast.LENGTH_SHORT).show();
 		return super.onTap(arg0);		
 	}

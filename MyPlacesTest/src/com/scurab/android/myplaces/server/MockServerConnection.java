@@ -7,8 +7,13 @@ import com.scurab.android.myplaces.server.ServerConnection;
 
 public class MockServerConnection extends ServerConnection
 {
-	public volatile int downloadCount = 0;
+	public volatile int DOWNLOAD_COUNT = 0;
 
+	public MockServerConnection()
+	{
+		super("");
+	}
+	
 	public MockServerConnection(String serverAddress)
 	{
 		super(serverAddress);
@@ -17,9 +22,9 @@ public class MockServerConnection extends ServerConnection
 	@Override
 	protected String downloadStars()
 	{
-		if (downloadCount == 0)
+		if (DOWNLOAD_COUNT == 0)
 			return "[]";
-		else if (downloadCount == 1)
+		else if (DOWNLOAD_COUNT == 1)
 			return "[{\"id\":10148397363569736,\"type\":\"20\",\"x\":14.500043,\"y\":50.13604}]";
 		else
 			return "[{\"id\":10148397363569736,\"type\":\"20\",\"x\":14.500043,\"y\":50.13604},"
@@ -30,9 +35,9 @@ public class MockServerConnection extends ServerConnection
 	@Override
 	protected String downloadMapItems(double left, double top, double bottom, double right) throws IOException
 	{
-		if (downloadCount == 0)
+		if (DOWNLOAD_COUNT == 0)
 			return "[]";
-		else if (downloadCount == 1)
+		else if (DOWNLOAD_COUNT == 1)
 			return Html
 					.fromHtml(
 							"[{\"id\":9972992318581640,\"type\":\"Hospoda\",\"name\":\"Dem\u00ednka\",\"country\":\"CZ\",\"city\":\"Prague\",\"street\":\"B\u011blehradsk\u00e1\","

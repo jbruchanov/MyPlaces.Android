@@ -2,6 +2,8 @@ package com.scurab.android.myplaces.util;
 
 import java.util.Random;
 
+import com.google.android.maps.GeoPoint;
+
 public class AppUtils
 {
 	private final static Random sRandom = new Random();
@@ -76,5 +78,12 @@ public class AppUtils
 		double base = Math.pow(10, decimals);
 		int ix = (int)(Math.round(dbl * base));
 		return ix/base;
+	}
+	
+	public static double getDistance(GeoPoint gp1, GeoPoint gp2)
+	{
+		double x = Math.pow((double)(gp1.getLatitudeE6() - gp2.getLatitudeE6()),2);
+		double y = Math.pow((double)(gp1.getLongitudeE6() - gp2.getLongitudeE6()),2);
+		return Math.sqrt(x+y);
 	}
 }

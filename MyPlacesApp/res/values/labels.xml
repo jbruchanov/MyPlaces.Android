@@ -3,4 +3,6 @@
     <string name="lblStar">Star</string>
     <string name="lblMapItem">Map item</string>
     <string name="lblChooseStar">Choose star</string>
+    <string name="lblAddNewItem">Add new item</string>
+    <string name="lblSearch">Search</string>
 </resources>

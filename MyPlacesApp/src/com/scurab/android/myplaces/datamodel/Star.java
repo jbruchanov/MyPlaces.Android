@@ -99,6 +99,35 @@ public class Star implements Serializable, HasDescription
 		return result;
 	}
 	
+	public static String getStarTypeByIconId(int icoResId)
+	{
+//		int result = 0;
+		int result = 0;
+		if(icoResId == R.drawable.ico_star)
+			result = 10;
+		else if(icoResId == R.drawable.ico_cafe)
+			result = 11;
+		else if(icoResId == R.drawable.ico_drink)
+			result = 12;
+		else if(icoResId == R.drawable.ico_wine)
+			result = 13;
+		else if(icoResId == R.drawable.ico_search)
+			result = 14;
+		else if(icoResId == R.drawable.ico_smile_happy)
+			result = 20;
+		else if(icoResId == R.drawable.ico_smile_lick)
+			result = 21;
+		else if(icoResId == R.drawable.ico_smile_neutral)
+			result = 22;
+		else if(icoResId == R.drawable.ico_smile_unhappy)
+			result = 23;
+		else if(icoResId == R.drawable.ico_smile_veryhappy)
+			result = 24;
+		else
+			result = 10;
+		return String.valueOf(result);
+	}
+	
 	public int getStarIconResId()
 	{
 		return getStarIconResId(getType());

@@ -24,6 +24,15 @@ public class MyPlacesApplicationTest extends AndroidTestCase
 		assertNotNull(mpa.getPropertyProvider());
 	}
 	
+	/**
+	 * Assumed that you have geolocation enabled!
+	 */
+	public void testIsLocationsEnabled()
+	{
+		MockMyPlacesApplication mpa = new MockMyPlacesApplication();
+		mpa.attachBaseContext(getContext());
+		assertTrue(mpa.isFineGeolocationEnabled());
+	}
 	private class MockMyPlacesApplication extends MyPlacesApplication
 	{
 		@Override
@@ -32,4 +41,6 @@ public class MyPlacesApplicationTest extends AndroidTestCase
 			super.attachBaseContext(base);
 		}
 	}
+	
+	
 }

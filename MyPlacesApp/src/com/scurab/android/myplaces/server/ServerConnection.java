@@ -3,6 +3,8 @@ package com.scurab.android.myplaces.server;
 import java.io.IOException;
 import org.restlet.Client;
 import org.restlet.Context;
+import org.restlet.Response;
+import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
 import org.restlet.resource.ClientResource;
 
@@ -63,6 +65,15 @@ public class ServerConnection
 		MapItem[] result = sGson.fromJson(response, MapItem[].class);
 		if(result == null) result = new MapItem[]{};
 		return result;
+	}
+	
+	public void save(Star s)
+	{
+		ClientResource resource = getClientResource(mStarsUrl);
+		String value = sGson.toJson(s);
+		resource.post(value, MediaType.APPLICATION_JSON);
+		Response r = resource.getResponse();
+		assert(r.getStatus().isSuccess());
 	}
 	
 	protected String downloadStars() throws IOException

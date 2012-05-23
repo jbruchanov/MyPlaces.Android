@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import com.scurab.android.myplaces.M;
 import com.scurab.android.myplaces.datamodel.MapItem;
 import com.scurab.android.myplaces.datamodel.Star;
 
@@ -11,12 +12,12 @@ import junit.framework.TestCase;
 
 public class ServerConnectionTest extends TestCase
 {
-	private String serverUrl = "http://myplaces.scurab.com:8182";
+	private String serverUrl = M.Defaults.PROPERTY_SERVER_URL;//"http://myplaces.scurab.com:8182";
 			
 	public void testGetStarsOne() throws IOException
 	{
 		MockServerConnection ms = new MockServerConnection(serverUrl);
-		ms.downloadCount = 1;
+		ms.DOWNLOAD_COUNT = 1;
 		List<Star> result = Arrays.asList(ms.getStars());
 		assertEquals(1,result.size());
 		
@@ -38,7 +39,7 @@ public class ServerConnectionTest extends TestCase
 	public void testGetStarsMore() throws IOException
 	{
 		MockServerConnection ms = new MockServerConnection(serverUrl);
-		ms.downloadCount = 3;
+		ms.DOWNLOAD_COUNT = 3;
 		Star[] result = ms.getStars();
 		assertNotNull(result);
 		assertEquals(3,result.length);
@@ -54,17 +55,17 @@ public class ServerConnectionTest extends TestCase
 		assertEquals("12",result[2].getType());
 	}
 
-	public void testGetStarsFromRealServer() throws IOException
-	{
-		ServerConnection ms = new ServerConnection(serverUrl);
-		Star[] result = ms.getStars();
-		assertNotNull(result);
-		assertTrue(result.length > 0);
-		for(Star mi : result)
-		{
-			assertTrue(mi.getType().length() > 0);
-		}
-	}
+//	public void testGetStarsFromRealServer() throws IOException
+//	{
+//		ServerConnection ms = new ServerConnection(serverUrl);
+//		Star[] result = ms.getStars();
+//		assertNotNull(result);
+//		assertTrue(result.length > 0);
+//		for(Star mi : result)
+//		{
+//			assertTrue(mi.getType().length() > 0);
+//		}
+//	}
 	
 	
 	public void testGetMapItemsNone() throws IOException
@@ -79,7 +80,7 @@ public class ServerConnectionTest extends TestCase
 	public void testGetMapItemsOne() throws IOException
 	{
 		MockServerConnection ms = new MockServerConnection(serverUrl);
-		ms.downloadCount = 1;
+		ms.DOWNLOAD_COUNT = 1;
 		MapItem[] result = ms.getMapItems(0,0,0,0);
 		
 		assertNotNull(result);
@@ -103,7 +104,7 @@ public class ServerConnectionTest extends TestCase
 	public void testGetMapItemsMore() throws IOException
 	{
 		MockServerConnection ms = new MockServerConnection(serverUrl);
-		ms.downloadCount = 3;
+		ms.DOWNLOAD_COUNT = 3;
 		MapItem[] result = ms.getMapItems(0,0,0,0);
 		
 		assertNotNull(result);
@@ -114,15 +115,25 @@ public class ServerConnectionTest extends TestCase
 		}
 	}
 
-	public void testGetMapItemsFromRealServer() throws IOException
-	{
-		ServerConnection ms = new ServerConnection(serverUrl);
-		MapItem[] result = ms.getMapItems(14.5, 51, 14.6, 50);
-		assertNotNull(result);
-		assertTrue(result.length > 0);
-		for(MapItem mi : result)
-		{
-			assertTrue(mi.getTitle().length() > 0);
-		}
-	}
+//	public void testGetMapItemsFromRealServer() throws IOException
+//	{
+//		ServerConnection ms = new ServerConnection(serverUrl);
+//		MapItem[] result = ms.getMapItems(14.5, 51, 14.6, 50);
+//		assertNotNull(result);
+//		assertTrue(result.length > 0);
+//		for(MapItem mi : result)
+//		{
+//			assertTrue(mi.getTitle().length() > 0);
+//		}
+//	}
+	
+//	public void testSaveStarRealServer()
+//	{
+//		ServerConnection ms = new ServerConnection(serverUrl);
+//		Star s= new Star();
+//		s.setType(Star.getStarTypeByIconId(com.scurab.android.myplaces.R.drawable.ico_smile_happy));
+//		s.setX(14);
+//		s.setY(55);
+//		ms.save(s);
+//	}
 }

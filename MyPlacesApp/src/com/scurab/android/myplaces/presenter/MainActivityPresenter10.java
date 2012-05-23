@@ -26,7 +26,7 @@ import com.scurab.android.myplaces.overlay.Overlays;
 import com.scurab.android.myplaces.overlay.MyPlaceOverlayItem;
 import com.scurab.android.myplaces.widget.SmileyDialog;
 
-public class MainActivityPresenter extends BasePresenter implements ActivityOptionsMenuListener
+public class MainActivityPresenter10 extends BasePresenter implements ActivityOptionsMenuListener
 {
 	public static final int STATE_DEFAULT = 0;
 	public static final int STATE_ADDING_NEW_ITEM = 1;
@@ -54,16 +54,7 @@ public class MainActivityPresenter extends BasePresenter implements ActivityOpti
 		}
 	};
 	
-	private PopupMenu.OnMenuItemClickListener mAddPopupMenuListener = new PopupMenu.OnMenuItemClickListener()
-	{
-		@Override
-		public boolean onMenuItemClick(MenuItem item)
-		{
-			return onAddMenuItemClick(item.getItemId());			
-		}
-	};
-	
-	public MainActivityPresenter(MainActivity context)
+	public MainActivityPresenter10(MainActivity context)
 	{
 		super(context);
 		mContext = context;
@@ -166,16 +157,29 @@ public class MainActivityPresenter extends BasePresenter implements ActivityOpti
 			{				
 				SmileyDialog sd = (SmileyDialog) dialog;
 				GeoPoint location = sd.getGeoPoint();
-				showMessage(String.format("ic:%S x:%s y:%s", which, location.getLatitudeE6()/COORD_HELP_MAPPER,location.getLongitudeE6()/COORD_HELP_MAPPER));
+//				showMessage(String.format("ic:%S x:%s y:%s", which, location.getLatitudeE6()/COORD_HELP_MAPPER,location.getLongitudeE6()/COORD_HELP_MAPPER));
+				onAddNewStar(location, which);
 			}
 		});
 		sd.setOnCancelListener(new Dialog.OnCancelListener(){@Override public void onCancel(DialogInterface dialog){setState(STATE_DEFAULT);}});
 		sd.show();
 	}
 	
-	public void onAddNewStar(GeoPoint location, int starIconId)
+	public void onAddNewStar(final GeoPoint location, final int starIconId)
 	{
 		setState(STATE_DEFAULT);
+		new Thread(new Runnable()
+		{
+			public void run()
+			{
+				final Star s = new Star();
+				s.setX(location.getLongitudeE6()/COORD_HELP_MAPPER);
+				s.setY(location.getLatitudeE6()/COORD_HELP_MAPPER);
+				s.setType(Star.getStarTypeByIconId(starIconId));
+				getServerConnection().save(s);				
+				mContext.runOnUiThread(new Runnable(){@Override public void run(){onLoadedStars(new Star[] {s});/*mMapView.invalidate();*/}});
+			}
+		},"onAddNewStar").start();
 	}
 	
 	/**
@@ -240,9 +244,6 @@ public class MainActivityPresenter extends BasePresenter implements ActivityOpti
 		switch(item.getItemId())
 		{
 			case R.id.muAdd:					
-				PopupMenu pm = getPopupMenu(R.menu.menu_add,R.id.muAdd);
-				pm.setOnMenuItemClickListener(mAddPopupMenuListener);
-				pm.show();
 				break;
 			default:
 				result = false;

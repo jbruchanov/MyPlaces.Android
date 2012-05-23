@@ -13,6 +13,7 @@ import com.scurab.android.myplaces.server.ServerConnection;
 import android.content.Context;
 import android.test.AndroidTestCase;
 import android.util.Log;
+import android.widget.ImageButton;
 
 public class MainActivityPresenterLoadingTest extends AndroidTestCase
 {
@@ -33,8 +34,10 @@ public class MainActivityPresenterLoadingTest extends AndroidTestCase
 
 	public void testInitLoadStars() throws InterruptedException
 	{
-		mmap = new MockMainActivityPresenter(new MockMainActivity(mContext));
-		msc.downloadCount = 1;
+		mmap = new MockMainActivityPresenter(new MockMainActivity(mContext));		
+		mmap.stars = true;
+		mmap.onLoadingStars();
+		msc.DOWNLOAD_COUNT = 1;
 		Log.v("testInitLoadStars", "Waiting to interrupt by another thread");
 		for(int i = 0;i<Integer.MAX_VALUE && !checkedStars;i++)		
 			Log.v("testInitLoadStars", i + " waiting");
@@ -44,7 +47,9 @@ public class MainActivityPresenterLoadingTest extends AndroidTestCase
 	public void testInitLoadMapItems() throws InterruptedException
 	{
 		mmap = new MockMainActivityPresenter(new MockMainActivity(mContext));
-		msc.downloadCount = 1;
+		mmap.mapitems = true;
+		mmap.onLoadingMapItems();
+		msc.DOWNLOAD_COUNT = 1;
 		Log.v("testInitLoadStars", "Waiting to interrupt by another thread");
 		for(int i = 0;i<Integer.MAX_VALUE && !checkedMapItems;i++)		
 			Log.v("testInitLoadMapItems", i + " waiting");
@@ -54,31 +59,37 @@ public class MainActivityPresenterLoadingTest extends AndroidTestCase
 	public void testLoadToListOverlaysStars()
 	{
 		mmap = new MockMainActivityPresenter(new MockMainActivity(mContext));
-		msc.downloadCount = 1;
+		mmap.stars = true;
+		mmap.onLoadingStars();
+		msc.DOWNLOAD_COUNT = 1;
 		Log.v("testLoadToListOverlaysStars", "Waiting to interrupt by another thread");
 		for(int i = 0;i<Integer.MAX_VALUE && !checkedLoadedItemsToMap;i++)		
 			Log.v("testLoadToListOverlaysMap", i + " waiting");
 		assertTrue(checkedLoadedItemsToMap);
-		assertEquals(msc.downloadCount, mmap.getOverlayList().size());
+		assertEquals(msc.DOWNLOAD_COUNT, mmap.getOverlayList().size());
 	}
 	
 	public void testLoadToListOverlaysMapItems()
 	{
 		mmap = new MockMainActivityPresenter(new MockMainActivity(mContext));
-		msc.downloadCount = 1;
+		mmap.mapitems = true;
+		mmap.onLoadingMapItems();		
+		msc.DOWNLOAD_COUNT = 1;
 		Log.v("testLoadToListOverlaysStars", "Waiting to interrupt by another thread");
 		for(int i = 0;i<Integer.MAX_VALUE && !checkedLoadedItemsToMap;i++)		
 			Log.v("testLoadToListOverlaysMapItems", i + " waiting");
 		assertTrue(checkedLoadedItemsToMap);
-		assertEquals(msc.downloadCount, mmap.getOverlayList().size());
+		assertEquals(msc.DOWNLOAD_COUNT, mmap.getOverlayList().size());
 	}
 	
-	private class MockMainActivityPresenter extends MainActivityPresenter
+	private class MockMainActivityPresenter extends MainActivityPresenter15
 	{
 		List<Overlay> overlays;
+		boolean stars = false;
+		boolean mapitems = false;
 		public MockMainActivityPresenter(MainActivity context)
 		{
-			super(context);
+			super(context);			
 		}
 		
 		@Override
@@ -88,15 +99,22 @@ public class MainActivityPresenterLoadingTest extends AndroidTestCase
 		}		
 		
 		@Override
+		protected void loadData()
+		{
+			//dont load by deafult
+		}
+		
+		@Override
 		public void onLoadedStars(Star[] stars)
 		{
+			
 			assertNotNull(stars);
 			if(stars.length == 0)
 			{
 				Star s = new Star();
 				s.setX(5);s.setY(5);
 				stars = new Star[] {s};
-			}
+			}			
 			super.onLoadedStars(stars);
 			checkedStars = true;
 			checkedLoadedItemsToMap = true;
@@ -105,6 +123,7 @@ public class MainActivityPresenterLoadingTest extends AndroidTestCase
 		@Override
 		public void onLoadedMapItems(MapItem[] items) 
 		{
+			if(!mapitems) return;
 			assertNotNull(items);		
 			if(items.length == 0)
 			{
@@ -131,6 +150,12 @@ public class MainActivityPresenterLoadingTest extends AndroidTestCase
 		public MockMainActivity(Context c)
 		{
 			attachBaseContext(c);
+		}
+		
+		@Override
+		public ImageButton getMyLocationButton()
+		{
+			return new ImageButton(mContext);
 		}
 	}
 }

@@ -57,7 +57,7 @@ public class SmileyDialog extends Dialog
 			public void onClick(View v)
 			{			
 				if(mClickListener != null)
-					mClickListener.onClick(SmileyDialog.this, b.getId());
+					mClickListener.onClick(SmileyDialog.this, v.getId());
 				dismiss();
 			}
 		});

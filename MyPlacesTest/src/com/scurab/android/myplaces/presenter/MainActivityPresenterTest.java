@@ -7,6 +7,7 @@ import com.scurab.android.myplaces.server.ServerConnection;
 
 import android.content.Context;
 import android.test.AndroidTestCase;
+import android.widget.ImageButton;
 
 public class MainActivityPresenterTest extends AndroidTestCase
 {
@@ -14,27 +15,27 @@ public class MainActivityPresenterTest extends AndroidTestCase
 	public void testOnAddStarClick()
 	{
 		MockMainActivityPresenter  mma = new MockMainActivityPresenter();
-		assertEquals(MainActivityPresenter.STATE_DEFAULT,mma.getState());
+		assertEquals(MainActivityPresenter15.STATE_DEFAULT,mma.getState());
 		mma.onAddMenuItemClick(R.id.muAddStar);
-		assertEquals(MainActivityPresenter.STATE_ADDING_NEW_STAR,mma.getState());
+		assertEquals(MainActivityPresenter15.STATE_ADDING_NEW_STAR,mma.getState());
 		//click to map should return state to default
 		mma.onMapClick(new GeoPoint(0, 0));
-		assertEquals(MainActivityPresenter.STATE_DEFAULT,mma.getState());
+		assertEquals(MainActivityPresenter15.STATE_DEFAULT,mma.getState());
 	}
 
 	public void testOnAddMapItemClick()
 	{
 		MockMainActivityPresenter  mma = new MockMainActivityPresenter();
-		assertEquals(MainActivityPresenter.STATE_DEFAULT,mma.getState());
+		assertEquals(MainActivityPresenter15.STATE_DEFAULT,mma.getState());
 		mma.onAddMenuItemClick(R.id.muAddMapItem);
-		assertEquals(MainActivityPresenter.STATE_ADDING_NEW_ITEM,mma.getState());
+		assertEquals(MainActivityPresenter15.STATE_ADDING_NEW_ITEM,mma.getState());
 		//click to map should return state to default
 		mma.onMapClick(new GeoPoint(0, 0));
-		assertEquals(MainActivityPresenter.STATE_DEFAULT,mma.getState());
+		assertEquals(MainActivityPresenter15.STATE_DEFAULT,mma.getState());
 	}
 	
 	
-	private class MockMainActivityPresenter extends MainActivityPresenter
+	private class MockMainActivityPresenter extends MainActivityPresenter15
 	{
 		public MockMainActivityPresenter()
 		{
@@ -59,6 +60,12 @@ public class MainActivityPresenterTest extends AndroidTestCase
 		public MockMainActivity(Context c)
 		{
 			attachBaseContext(c);
+		}
+		
+		@Override
+		public ImageButton getMyLocationButton()
+		{
+			return new ImageButton(mContext);
 		}
 	}
 }
