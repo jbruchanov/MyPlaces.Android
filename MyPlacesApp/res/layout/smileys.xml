@@ -39,7 +39,7 @@
                 android:layout_height="wrap_content"
                 android:src="@drawable/ico_wine" />
             <ImageButton
-                android:id="@+id/ibMagnifyGlass"
+                android:id="@+id/ibSearch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ico_search" />

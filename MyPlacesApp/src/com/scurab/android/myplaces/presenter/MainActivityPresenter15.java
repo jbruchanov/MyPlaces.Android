@@ -277,13 +277,13 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
 		List<Overlay> mapOverlays = getOverlayList();
 		Overlays<Star> itemizedoverlay = new Overlays<Star>(mContext,R.drawable.ico_star);
 		itemizedoverlay.setTapListener(new Overlays.OnTapListener<Star>(){@Override public boolean onTap(Star t){return onOverlayTap(t);}});
-		
+		Resources res = mContext.getResources();
 		for(Star s : stars)
 		{
 			int lat = (int)(s.getY() * COORD_HELP_MAPPER);
 			int lng = (int)(s.getX() * COORD_HELP_MAPPER);
 			MyPlaceOverlayItem<Star> oi = new MyPlaceOverlayItem<Star>(new GeoPoint(lat, lng), s);
-			itemizedoverlay.addOverlay(oi);
+			itemizedoverlay.addOverlay(oi,res.getDrawable(s.getIconResId()));			
 		}		
 		mapOverlays.add(itemizedoverlay);
 	}

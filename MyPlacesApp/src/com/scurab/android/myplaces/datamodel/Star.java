@@ -103,32 +103,32 @@ public class Star implements Serializable, HasDescription
 	{
 //		int result = 0;
 		int result = 0;
-		if(icoResId == R.drawable.ico_star)
+		if(icoResId == R.id.ibStar)
 			result = 10;
-		else if(icoResId == R.drawable.ico_cafe)
+		else if(icoResId == R.id.ibCoffee)
 			result = 11;
-		else if(icoResId == R.drawable.ico_drink)
+		else if(icoResId == R.id.ibDrink)
 			result = 12;
-		else if(icoResId == R.drawable.ico_wine)
+		else if(icoResId == R.id.ibWine)
 			result = 13;
-		else if(icoResId == R.drawable.ico_search)
+		else if(icoResId == R.id.ibSearch)
 			result = 14;
-		else if(icoResId == R.drawable.ico_smile_happy)
+		else if(icoResId == R.id.ibSmileHappy)
 			result = 20;
-		else if(icoResId == R.drawable.ico_smile_lick)
+		else if(icoResId == R.id.ibSmileLick)
 			result = 21;
-		else if(icoResId == R.drawable.ico_smile_neutral)
+		else if(icoResId == R.id.ibSmileNeutral)
 			result = 22;
-		else if(icoResId == R.drawable.ico_smile_unhappy)
+		else if(icoResId == R.id.ibSmileUnhappy)
 			result = 23;
-		else if(icoResId == R.drawable.ico_smile_veryhappy)
+		else if(icoResId == R.id.ibSmileVeryHappy)
 			result = 24;
 		else
 			result = 10;
 		return String.valueOf(result);
 	}
 	
-	public int getStarIconResId()
+	public int getIconResId()
 	{
 		return getStarIconResId(getType());
 	}
