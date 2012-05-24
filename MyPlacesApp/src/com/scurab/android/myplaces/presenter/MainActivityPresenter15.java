@@ -1,22 +1,15 @@
 package com.scurab.android.myplaces.presenter;
 
+import java.util.ArrayList;
 import java.util.List;
-import org.restlet.resource.Finder;
-
-import android.app.ActionBar;
 import android.app.AlertDialog;
-import android.app.AlertDialog.Builder;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.res.Resources;
 import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.os.Handler;
 import android.os.Message;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -36,12 +29,12 @@ import com.scurab.android.myplaces.M;
 import com.scurab.android.myplaces.R;
 import com.scurab.android.myplaces.activity.MainActivity;
 import com.scurab.android.myplaces.datamodel.MapItem;
+import com.scurab.android.myplaces.datamodel.MyPosition;
 import com.scurab.android.myplaces.datamodel.Star;
 import com.scurab.android.myplaces.interfaces.ActivityLifecycleListener;
 import com.scurab.android.myplaces.interfaces.ActivityOptionsMenuListener;
 import com.scurab.android.myplaces.interfaces.OnLocationListener;
-import com.scurab.android.myplaces.overlay.Overlays;
-import com.scurab.android.myplaces.overlay.MyPlaceOverlayItem;
+import com.scurab.android.myplaces.overlay.MyPlaceOverlay;
 import com.scurab.android.myplaces.util.AppUtils;
 import com.scurab.android.myplaces.util.DialogBuilder;
 import com.scurab.android.myplaces.widget.SmileyDialog;
@@ -54,12 +47,14 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
 	
 	public static final int DIALOG_STAR = 0x482489f;
 	private MainActivity mContext;
-	private final static double COORD_HELP_MAPPER = 1E6;
+	
 	private int mState = STATE_DEFAULT;
 	
 	private MapView mMapView;
 	private PresenterHandler mHandler;
-	private Overlays<GeoPoint> mMyLocationOverlay;
+	private MyPlaceOverlay<MyPosition> mMyLocationOverlay;
+	private List<MyPlaceOverlay<Star>> mStarOverlays;
+	private List<MyPlaceOverlay<MapItem>> mMapItemOverlays;
 	
 	private View.OnTouchListener mMapTouchListener = new View.OnTouchListener()
 	{
@@ -85,6 +80,7 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
 			return onAddMenuItemClick(item.getItemId());			
 		}
 	};
+	
 	
 	public MainActivityPresenter15(MainActivity context)
 	{
@@ -132,8 +128,8 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
 		if(l == null)
 			return;
 		GeoPoint center = mMapView.getProjection().fromPixels(mMapView.getWidth()/2, mMapView.getHeight()/2);		
-		GeoPoint gp = new GeoPoint((int)(l.getLatitude()*COORD_HELP_MAPPER),
-								   (int)(l.getLongitude()*COORD_HELP_MAPPER));		
+		GeoPoint gp = new GeoPoint((int)(l.getLatitude()*M.COORD_HELP_MAPPER),
+								   (int)(l.getLongitude()*M.COORD_HELP_MAPPER));		
 		double distance = AppUtils.getDistance(center, gp);
 		int zoom = 19;
 		if(distance > 1000 || mMapView.getZoomLevel() != zoom) //approx half of display with zoom 19
@@ -144,13 +140,15 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
 			mHandler.sendDelayedRemoveMyOverlay();
 //			Toast.makeText(mContext, "centered " + System.currentTimeMillis(), Toast.LENGTH_SHORT).show();
 		}
-		addMyLocationOverlay(gp);
+		addMyLocationOverlay(l.getLongitude(),l.getLatitude());
 	}
 
 	private void init()
 	{
 		mMapView = mContext.getMapView();
 		mHandler = new PresenterHandler(mContext);
+		mStarOverlays = new ArrayList<MyPlaceOverlay<Star>>();
+		mMapItemOverlays = new ArrayList<MyPlaceOverlay<MapItem>>();
 		loadData();
 	}
 	
@@ -241,7 +239,7 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
 			{				
 				SmileyDialog sd = (SmileyDialog) dialog;
 				GeoPoint location = sd.getGeoPoint();
-//				showMessage(String.format("ic:%S x:%s y:%s", which, location.getLatitudeE6()/COORD_HELP_MAPPER,location.getLongitudeE6()/COORD_HELP_MAPPER));
+//				showMessage(String.format("ic:%S x:%s y:%s", which, location.getLatitudeE6()/M.COORD_HELP_MAPPER,location.getLongitudeE6()/M.COORD_HELP_MAPPER));
 				onAddNewStar(location, which);
 			}
 		});
@@ -254,14 +252,17 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
 		setState(STATE_DEFAULT);
 		new Thread(new Runnable()
 		{
+			@Override
 			public void run()
 			{
 				final Star s = new Star();
-				s.setX(location.getLongitudeE6()/COORD_HELP_MAPPER);
-				s.setY(location.getLatitudeE6()/COORD_HELP_MAPPER);
+				s.setX(location.getLongitudeE6()/M.COORD_HELP_MAPPER);
+				s.setY(location.getLatitudeE6()/M.COORD_HELP_MAPPER);
 				s.setType(Star.getStarTypeByIconId(starIconId));
-				getServerConnection().save(s);				
+				Star saved = getServerConnection().save(s);
+				s.setId(saved.getId());
 				mContext.runOnUiThread(new Runnable(){@Override public void run(){onLoadedStars(new Star[] {s});/*mMapView.invalidate();*/}});
+				mHandler.sendEmptyMessage(PresenterHandler.INVALIDATE_MAP);
 			}
 		},"onAddNewStar").start();
 	}
@@ -275,17 +276,17 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
 		if(stars.length == 0)
 			return;
 		List<Overlay> mapOverlays = getOverlayList();
-		Overlays<Star> itemizedoverlay = new Overlays<Star>(mContext,R.drawable.ico_star);
-		itemizedoverlay.setTapListener(new Overlays.OnTapListener<Star>(){@Override public boolean onTap(Star t){return onOverlayTap(t);}});
-		Resources res = mContext.getResources();
 		for(Star s : stars)
 		{
-			int lat = (int)(s.getY() * COORD_HELP_MAPPER);
-			int lng = (int)(s.getX() * COORD_HELP_MAPPER);
-			MyPlaceOverlayItem<Star> oi = new MyPlaceOverlayItem<Star>(new GeoPoint(lat, lng), s);
-			itemizedoverlay.addOverlay(oi,res.getDrawable(s.getIconResId()));			
+			MyPlaceOverlay<Star> so = new MyPlaceOverlay<Star>(mContext, s);
+			so.setTapListener(new MyPlaceOverlay.OnTapListener<Star>(){
+				@SuppressWarnings("unchecked")
+				@Override public void onTap(MyPlaceOverlay<?> item){onStarTap((MyPlaceOverlay<Star>) item);}}
+			);
+			mapOverlays.add(so);
+			mStarOverlays.add(so);
 		}		
-		mapOverlays.add(itemizedoverlay);
+		mHandler.sendEmptyMessage(PresenterHandler.INVALIDATE_MAP);
 	}
 	
 	/**
@@ -293,16 +294,18 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
 	 * @param s
 	 * @return
 	 */
-	public boolean onOverlayTap(Star s)
+	public boolean onStarTap(MyPlaceOverlay<Star> overlay)
 	{				
-		showStarDialog(s);
+		showStarDialog(overlay);
 		return true;
 	}
 	
-	protected void showStarDialog(final Star star)
+	protected void showStarDialog(final MyPlaceOverlay<Star> overlay)
 	{
+		final Star star = overlay.getObject();
 		final EditText mEditText = new EditText(mContext);
 		final AlertDialog ad = DialogBuilder.getStarDialog(mContext, mEditText, star);		
+		//update handler
 		ad.setButton(DialogInterface.BUTTON_POSITIVE, mContext.getString(R.string.lblOK), new DialogInterface.OnClickListener()
 		{
 			@Override
@@ -318,17 +321,55 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
 						@Override
 						public void run()
 						{
-							getServerConnection().save(star);
+							try
+							{
+								getServerConnection().save(star);
+							}
+							catch(Exception e)
+							{
+								showMessage(e);
+							}
 							hideProgressBar();
 						}
 					},"UpdateStar").run();
 				}
 			}
 		});
+		
+		//delete handler
+		ad.setButton(DialogInterface.BUTTON_NEGATIVE, mContext.getString(R.string.lblDeleteStar), new DialogInterface.OnClickListener()
+		{
+			@Override
+			public void onClick(DialogInterface dialog, int which)
+			{
+				showProgressBar();				
+				mStarOverlays.remove(overlay);
+				getOverlayList().remove(overlay);
+				mMapView.invalidate();
+				new Thread(new Runnable()
+				{
+					@Override
+					public void run()
+					{
+						try
+						{
+							getServerConnection().delete(star);
+						}
+						catch(Exception e)
+						{
+							showMessage(e);
+							mStarOverlays.add(overlay);
+							getOverlayList().add(overlay);
+						}
+						hideProgressBar();
+					}
+				},"UpdateStar").run();
+			}
+		});
 		ad.show();
 	}
 	
-	public boolean onOverlayTap(MapItem m)
+	public boolean onMapItemTap(MyPlaceOverlay<MapItem> overlay)
 	{
 		return true;
 	}
@@ -350,17 +391,12 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
 		}
 	}
 	
-	protected void addMyLocationOverlay(GeoPoint gp)
-	{
-		if(gp == null)
-			return;
+	protected void addMyLocationOverlay(double x, double y)
+	{		
 		List<Overlay> mapOverlays = getOverlayList();
 		if(mMyLocationOverlay != null)
 			mapOverlays.remove(mMyLocationOverlay);
-		
-		mMyLocationOverlay = new Overlays<GeoPoint>(mContext,R.drawable.ic_launcher);
-		MyPlaceOverlayItem<GeoPoint> oi = new MyPlaceOverlayItem<GeoPoint>(gp, gp);
-		mMyLocationOverlay.addOverlay(oi);
+		mMyLocationOverlay = new MyPlaceOverlay<MyPosition>(mContext, new MyPosition(x, y));
 		mapOverlays.add(mMyLocationOverlay);
 	}
 	
@@ -381,18 +417,19 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
 	{
 		if(items.length == 0)
 			return;
+
 		List<Overlay> mapOverlays = getOverlayList();
-		Overlays<MapItem> itemizedoverlay = new Overlays<MapItem>(mContext,R.drawable.ic_launcher);
-		itemizedoverlay.setTapListener(new Overlays.OnTapListener<MapItem>(){@Override public boolean onTap(MapItem t){return onOverlayTap(t);}});
-		Resources res = mContext.getResources();
 		for(MapItem s : items)
 		{
-			int lat = (int)(s.getY() * COORD_HELP_MAPPER);
-			int lng = (int)(s.getX() * COORD_HELP_MAPPER);
-			MyPlaceOverlayItem<MapItem> oi = new MyPlaceOverlayItem<MapItem>(new GeoPoint(lat, lng), s);
-			itemizedoverlay.addOverlay(oi,res.getDrawable(s.getIconResId()));
-		}
-		mapOverlays.add(itemizedoverlay);
+			MyPlaceOverlay<MapItem> so = new MyPlaceOverlay<MapItem>(mContext, s);
+			so.setTapListener(new MyPlaceOverlay.OnTapListener<MapItem>(){
+				@SuppressWarnings("unchecked")
+				@Override public void onTap(MyPlaceOverlay<?> item){onMapItemTap((MyPlaceOverlay<MapItem>) item);}}
+			);
+			mMapItemOverlays.add(so);
+			mapOverlays.add(so);
+		}		
+		mHandler.sendEmptyMessage(PresenterHandler.INVALIDATE_MAP);
 	}
 
 	
@@ -493,8 +530,8 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
 			if(result.size() == 1)
 			{
 				Address a = result.get(0);				
-				GeoPoint gp = new GeoPoint((int)(a.getLatitude()*COORD_HELP_MAPPER),
-						   				   (int)(a.getLongitude()*COORD_HELP_MAPPER));
+				GeoPoint gp = new GeoPoint((int)(a.getLatitude()*M.COORD_HELP_MAPPER),
+						   				   (int)(a.getLongitude()*M.COORD_HELP_MAPPER));
 				mMapView.getController().setCenter(gp);
 				mMapView.getController().setZoom(10);
 			}
@@ -549,6 +586,7 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
 	{		
 		public static final int HIDE_PROGRESSBAR = 1;
 		public static final int REMOVE_MYLOCATION_OVERLAY = 2;
+		public static final int INVALIDATE_MAP = 3;
 		
 		public PresenterHandler(Context c)
 		{
@@ -571,6 +609,9 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
 					break;
 				case REMOVE_MYLOCATION_OVERLAY:
 					removeMyLocationOverlay();
+					break;
+				case INVALIDATE_MAP:
+					mMapView.invalidate();
 					break;
 				default:
 					super.handleMessage(msg);

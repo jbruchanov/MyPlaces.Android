@@ -29,7 +29,7 @@ public class MainActivityPresenterMyLocationTest extends ActivityUnitTestCase<Ma
 		MainActivity ma = getActivity();
 		MainActivityPresenter15 p = (MainActivityPresenter15) ma.getPresenter();		
 		int c = p.getOverlayList().size();
-		p.addMyLocationOverlay(new GeoPoint(0, 0));
+		p.addMyLocationOverlay(0,0);
 		assertEquals(c+1,p.getOverlayList().size());
 	}
 	
@@ -39,7 +39,7 @@ public class MainActivityPresenterMyLocationTest extends ActivityUnitTestCase<Ma
 		MainActivity ma = getActivity();
 		MainActivityPresenter15 p = (MainActivityPresenter15) ma.getPresenter();		
 		int c = p.getOverlayList().size();
-		p.addMyLocationOverlay(new GeoPoint(0, 0));
+		p.addMyLocationOverlay(0,0);
 		assertEquals(c+1,p.getOverlayList().size());
 		p.removeMyLocationOverlay();
 		assertEquals(c,p.getOverlayList().size());

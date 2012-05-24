@@ -1,6 +1,5 @@
 package com.scurab.android.myplaces.activity;
 
-import android.app.Application.ActivityLifecycleCallbacks;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;

@@ -2,7 +2,8 @@ package com.scurab.android.myplaces;
 
 public class M
 {
-	public static boolean TEST = false;
+	public final static double COORD_HELP_MAPPER = 1E6;
+	
 	public static final class Defaults
 	{
 

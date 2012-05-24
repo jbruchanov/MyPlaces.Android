@@ -1,12 +1,9 @@
 package com.scurab.android.myplaces.datamodel;
 
-import java.io.Serializable;
-
 import com.scurab.android.myplaces.R;
-import com.scurab.android.myplaces.interfaces.HasDescription;
 import com.scurab.android.myplaces.util.AppUtils;
 
-public class Star implements Serializable, HasDescription
+public class Star extends MapElement
 {
 	private long id;
 	private String note;
@@ -14,10 +11,12 @@ public class Star implements Serializable, HasDescription
 	private double x;
 	private double y;
 	
+	@Override
 	public double getX()
 	{
 		return x;
 	}
+	@Override
 	public double getY()
 	{
 		return y;
@@ -65,12 +64,6 @@ public class Star implements Serializable, HasDescription
 	{
 		return "";
 //		return getStarUrl(getType());
-	}
-	
-	@Override
-	public String getDescription()
-	{
-		return getTitle() + " " + getType();
 	}
 	
 	public static int getStarIconResId(String type)
@@ -128,6 +121,7 @@ public class Star implements Serializable, HasDescription
 		return String.valueOf(result);
 	}
 	
+	@Override
 	public int getIconResId()
 	{
 		return getStarIconResId(getType());

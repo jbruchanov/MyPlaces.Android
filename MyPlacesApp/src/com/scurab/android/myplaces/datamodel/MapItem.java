@@ -1,13 +1,11 @@
 package com.scurab.android.myplaces.datamodel;
 
-import java.io.Serializable;
 import java.util.List;
 
 import com.scurab.android.myplaces.R;
-import com.scurab.android.myplaces.interfaces.HasDescription;
 import com.scurab.android.myplaces.util.AppUtils;
 
-public class MapItem implements Serializable , HasDescription
+public class MapItem extends MapElement
 {
 	private long id;
 	private String type;
@@ -94,6 +92,7 @@ public class MapItem implements Serializable , HasDescription
 	{
 		this.author = author;
 	}
+	@Override
 	public double getX()
 	{
 		return x;
@@ -102,6 +101,7 @@ public class MapItem implements Serializable , HasDescription
 	{
 		this.x = AppUtils.round(x,6);
 	}
+	@Override
 	public double getY()
 	{
 		return y;
@@ -143,6 +143,7 @@ public class MapItem implements Serializable , HasDescription
 		this.country = country;
 	}
 
+	@Override
 	public int getIconResId()
 	{
 		String t = getType();
@@ -193,10 +194,5 @@ public class MapItem implements Serializable , HasDescription
 	public void setRating(int rating)
 	{
 		this.rating = rating;
-	}
-	@Override
-	public String getDescription()
-	{
-		return getTitle() + " " + getType();
 	}
 }

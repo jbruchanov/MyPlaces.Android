@@ -3,11 +3,9 @@ package com.scurab.android.myplaces.activity;
 import com.google.android.maps.MapView;
 import com.scurab.android.myplaces.R;
 import com.scurab.android.myplaces.presenter.BasePresenter;
-import com.scurab.android.myplaces.presenter.MainActivityPresenter10;
 import com.scurab.android.myplaces.presenter.MainActivityPresenter15;
 
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
@@ -24,10 +22,8 @@ public class MainActivity extends BaseMapActivity {
         super.onCreate(savedInstanceState);
         init();
         
-        if(android.os.Build.VERSION.SDK_INT > 10)
-        	mPresenter = getActivityPresenter();
-        else
-        	new MainActivityPresenter10(this);
+       
+    	mPresenter = getActivityPresenter();        
     }
     
     protected MainActivityPresenter15 getActivityPresenter()

@@ -28,7 +28,8 @@ public class ServerConnection
 	private final String mMapItemsTemplateUrl;
 	
 	private final String STARS_SUFFIX = "/stars";
-	private final String MAPITEM_SUFFIX = "/mapitems/{%s}";
+	private final String STARS_DELETE_SUFFIX = "/stars/%s";
+	private final String MAPITEM_SUFFIX = "/mapitems/%s";
 	private final String MAPITEMS_SUFFIX = "/mapitems/%s/%s/%s/%s";
 	
 	/**
@@ -67,7 +68,7 @@ public class ServerConnection
 		return result;
 	}
 	
-	public void save(Star s)
+	public Star save(Star s)
 	{
 		ClientResource resource = getClientResource(mStarsUrl);
 		String value = sGson.toJson(s);
@@ -76,7 +77,9 @@ public class ServerConnection
 		else
 			resource.put(value, MediaType.APPLICATION_JSON);
 		Response r = resource.getResponse();
+		Star saved = sGson.fromJson(r.getEntityAsText(), Star.class);
 		assert(r.getStatus().isSuccess());
+		return saved;
 	}
 	
 	protected String downloadStars() throws IOException
@@ -95,7 +98,6 @@ public class ServerConnection
 	
 	protected ClientResource getClientResource(String url)
 	{
-		
 		ClientResource resource = new ClientResource(url);			
 		resource.setRetryOnError(false);
 		Context context = new Context();
@@ -104,5 +106,14 @@ public class ServerConnection
 		client.setConnectTimeout(5000);
 		resource.setNext(client);
 		return resource;
+	}
+
+	public void delete(Star star)
+	{
+		String url = mServerUrl + String.format(STARS_DELETE_SUFFIX,star.getId());
+		ClientResource resource = getClientResource(url);
+		resource.delete();
+		Response r = resource.getResponse();
+		assert(r.getStatus().isSuccess());
 	}
 }

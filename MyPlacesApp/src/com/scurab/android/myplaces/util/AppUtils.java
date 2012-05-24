@@ -82,8 +82,8 @@ public class AppUtils
 	
 	public static double getDistance(GeoPoint gp1, GeoPoint gp2)
 	{
-		double x = Math.pow((double)(gp1.getLatitudeE6() - gp2.getLatitudeE6()),2);
-		double y = Math.pow((double)(gp1.getLongitudeE6() - gp2.getLongitudeE6()),2);
+		double x = Math.pow((gp1.getLatitudeE6() - gp2.getLatitudeE6()),2);
+		double y = Math.pow((gp1.getLongitudeE6() - gp2.getLongitudeE6()),2);
 		return Math.sqrt(x+y);
 	}
 	

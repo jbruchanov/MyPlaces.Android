@@ -7,4 +7,6 @@
     <string name="lblSearch">Search</string>
     <string name="lblNote">Note</string>
     <string name="lblOK">OK</string>
+    <string name="lblDelete">Delete</string>
+    <string name="lblDeleteStar">Delete Star</string>
 </resources>
