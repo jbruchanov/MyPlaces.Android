@@ -3,10 +3,16 @@ package com.scurab.android.myplaces.presenter;
 import java.util.List;
 import org.restlet.resource.Finder;
 
+import android.app.ActionBar;
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Resources;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.Handler;
 import android.os.Message;
@@ -16,6 +22,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.PopupMenu;
 import android.widget.SearchView;
 import android.widget.Toast;
@@ -25,6 +32,7 @@ import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
 import com.google.android.maps.Projection;
+import com.scurab.android.myplaces.M;
 import com.scurab.android.myplaces.R;
 import com.scurab.android.myplaces.activity.MainActivity;
 import com.scurab.android.myplaces.datamodel.MapItem;
@@ -35,6 +43,7 @@ import com.scurab.android.myplaces.interfaces.OnLocationListener;
 import com.scurab.android.myplaces.overlay.Overlays;
 import com.scurab.android.myplaces.overlay.MyPlaceOverlayItem;
 import com.scurab.android.myplaces.util.AppUtils;
+import com.scurab.android.myplaces.util.DialogBuilder;
 import com.scurab.android.myplaces.widget.SmileyDialog;
 
 public class MainActivityPresenter15 extends BasePresenter implements ActivityOptionsMenuListener, ActivityLifecycleListener
@@ -43,6 +52,7 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
 	public static final int STATE_ADDING_NEW_ITEM = 1;
 	public static final int STATE_ADDING_NEW_STAR = 2;
 	
+	public static final int DIALOG_STAR = 0x482489f;
 	private MainActivity mContext;
 	private final static double COORD_HELP_MAPPER = 1E6;
 	private int mState = STATE_DEFAULT;
@@ -266,6 +276,8 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
 			return;
 		List<Overlay> mapOverlays = getOverlayList();
 		Overlays<Star> itemizedoverlay = new Overlays<Star>(mContext,R.drawable.ico_star);
+		itemizedoverlay.setTapListener(new Overlays.OnTapListener<Star>(){@Override public boolean onTap(Star t){return onOverlayTap(t);}});
+		
 		for(Star s : stars)
 		{
 			int lat = (int)(s.getY() * COORD_HELP_MAPPER);
@@ -274,6 +286,51 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
 			itemizedoverlay.addOverlay(oi);
 		}		
 		mapOverlays.add(itemizedoverlay);
+	}
+	
+	/**
+	 * Shows edit dialog to update note
+	 * @param s
+	 * @return
+	 */
+	public boolean onOverlayTap(Star s)
+	{				
+		showStarDialog(s);
+		return true;
+	}
+	
+	protected void showStarDialog(final Star star)
+	{
+		final EditText mEditText = new EditText(mContext);
+		final AlertDialog ad = DialogBuilder.getStarDialog(mContext, mEditText, star);		
+		ad.setButton(DialogInterface.BUTTON_POSITIVE, mContext.getString(R.string.lblOK), new DialogInterface.OnClickListener()
+		{
+			@Override
+			public void onClick(DialogInterface dialog, int which)
+			{				
+				String s = mEditText.getText().toString();
+				if(!s.equals(star.getNote()))
+				{
+					star.setNote(s);
+					showProgressBar();
+					new Thread(new Runnable()
+					{
+						@Override
+						public void run()
+						{
+							getServerConnection().save(star);
+							hideProgressBar();
+						}
+					},"UpdateStar").run();
+				}
+			}
+		});
+		ad.show();
+	}
+	
+	public boolean onOverlayTap(MapItem m)
+	{
+		return true;
 	}
 	
 	/**
@@ -326,6 +383,7 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
 			return;
 		List<Overlay> mapOverlays = getOverlayList();
 		Overlays<MapItem> itemizedoverlay = new Overlays<MapItem>(mContext,R.drawable.ic_launcher);
+		itemizedoverlay.setTapListener(new Overlays.OnTapListener<MapItem>(){@Override public boolean onTap(MapItem t){return onOverlayTap(t);}});
 		Resources res = mContext.getResources();
 		for(MapItem s : items)
 		{
@@ -411,8 +469,44 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
 	{
 		MenuInflater inflater = mContext.getMenuInflater();
 		inflater.inflate(R.menu.main_activity, menu);
-		SearchView searchView = (SearchView) menu.findItem(R.id.muSearch).getActionView();
+		final SearchView searchView = (SearchView) menu.findItem(R.id.muSearch).getActionView();
+		searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener()
+		{
+			@Override
+			public boolean onQueryTextSubmit(String query)
+			{
+				onSearch(query);				
+				return true;
+			}
+			
+			@Override
+			public boolean onQueryTextChange(String newText){return false;}
+		});
 		return true;
+	}
+
+	public void onSearch(String query)
+	{
+		try
+		{
+			List<Address> result = getLocations(query);
+			if(result.size() == 1)
+			{
+				Address a = result.get(0);				
+				GeoPoint gp = new GeoPoint((int)(a.getLatitude()*COORD_HELP_MAPPER),
+						   				   (int)(a.getLongitude()*COORD_HELP_MAPPER));
+				mMapView.getController().setCenter(gp);
+				mMapView.getController().setZoom(10);
+			}
+			else
+			{
+				Toast.makeText(mContext, "Found " + result.size(), Toast.LENGTH_SHORT).show();
+			}
+		}
+		catch(Exception e)
+		{
+			showMessage(e);
+		}
 	}
 
 	@Override
@@ -429,12 +523,26 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
 	
 	public void showProgressBar()
 	{
-		mContext.getProgressBar().setVisibility(View.VISIBLE);
+		mContext.runOnUiThread(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				mContext.getProgressBar().setVisibility(View.VISIBLE);
+			}
+		});
 	}
 	
 	public void hideProgressBar()
 	{
-		mContext.getProgressBar().setVisibility(View.GONE);
+		mContext.runOnUiThread(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				mContext.getProgressBar().setVisibility(View.GONE);
+			}
+		});
 	}
 	
 	private class PresenterHandler extends Handler
@@ -467,7 +575,6 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
 				default:
 					super.handleMessage(msg);
 			}
-			
 		}
 	}
 }

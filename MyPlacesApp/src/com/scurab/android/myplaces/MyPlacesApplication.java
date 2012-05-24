@@ -1,16 +1,20 @@
 package com.scurab.android.myplaces;
 
+import java.io.IOException;
 import java.util.List;
 
 import android.app.Application;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.location.Address;
 import android.location.Criteria;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.webkit.GeolocationPermissions;
 
 import com.google.android.maps.GeoPoint;
 import com.scurab.android.myplaces.interfaces.OnLocationListener;
@@ -83,5 +87,11 @@ public class MyPlacesApplication extends Application
 			
 		}
 		return result;
+	}
+	
+	public List<Address> getLocations(String query) throws IOException
+	{
+		Geocoder g = new Geocoder(this);
+		return g.getFromLocationName(query, 5);
 	}
 }

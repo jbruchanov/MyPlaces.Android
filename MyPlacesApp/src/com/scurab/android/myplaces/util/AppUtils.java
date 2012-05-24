@@ -86,4 +86,6 @@ public class AppUtils
 		double y = Math.pow((double)(gp1.getLongitudeE6() - gp2.getLongitudeE6()),2);
 		return Math.sqrt(x+y);
 	}
+	
+	
 }

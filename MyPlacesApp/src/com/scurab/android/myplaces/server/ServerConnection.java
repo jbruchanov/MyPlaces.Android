@@ -71,7 +71,10 @@ public class ServerConnection
 	{
 		ClientResource resource = getClientResource(mStarsUrl);
 		String value = sGson.toJson(s);
-		resource.post(value, MediaType.APPLICATION_JSON);
+		if(s.getId() == 0)
+			resource.post(value, MediaType.APPLICATION_JSON);
+		else
+			resource.put(value, MediaType.APPLICATION_JSON);
 		Response r = resource.getResponse();
 		assert(r.getStatus().isSuccess());
 	}

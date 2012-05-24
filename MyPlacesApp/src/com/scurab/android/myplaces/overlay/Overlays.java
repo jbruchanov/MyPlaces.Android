@@ -14,6 +14,13 @@ public class Overlays<T> extends ItemizedOverlay<OverlayItem>
 	private ArrayList<MyPlaceOverlayItem<T>> mOverlays = new ArrayList<MyPlaceOverlayItem<T>>();
 	private Context mContext;
 	private int mIconResId;
+	private OnTapListener<T> mTapListener;
+	
+	public interface OnTapListener<T>
+	{
+		boolean onTap(T t);
+	}
+	
 	public Overlays(Context c, int iconResId)
 	{	
 		super(boundCenterBottom(c.getResources().getDrawable(iconResId)));
@@ -52,9 +59,17 @@ public class Overlays<T> extends ItemizedOverlay<OverlayItem>
 	@Override
 	protected boolean onTap(int arg0)
 	{
-		Object h = mOverlays.get(arg0).getObject();
-		String desc = h.toString();
-		Toast.makeText(mContext, desc, Toast.LENGTH_SHORT).show();
-		return super.onTap(arg0);		
+		boolean b = false;
+		T t = mOverlays.get(arg0).getObject();
+		if(mTapListener != null)
+			b = mTapListener.onTap(t);
+		if(!b)
+			b = super.onTap(arg0);
+		return b;
 	}
+
+	public void setTapListener(OnTapListener<T> tapListener)
+	{
+		mTapListener = tapListener;
+	}	
 }

@@ -5,4 +5,6 @@
     <string name="lblChooseStar">Choose star</string>
     <string name="lblAddNewItem">Add new item</string>
     <string name="lblSearch">Search</string>
+    <string name="lblNote">Note</string>
+    <string name="lblOK">OK</string>
 </resources>
