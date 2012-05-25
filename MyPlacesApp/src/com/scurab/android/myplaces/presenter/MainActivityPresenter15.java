@@ -32,6 +32,7 @@ import com.scurab.android.myplaces.datamodel.MapItem;
 import com.scurab.android.myplaces.datamodel.MyPosition;
 import com.scurab.android.myplaces.datamodel.Star;
 import com.scurab.android.myplaces.interfaces.ActivityLifecycleListener;
+import com.scurab.android.myplaces.interfaces.ActivityOnBackPressed;
 import com.scurab.android.myplaces.interfaces.ActivityOptionsMenuListener;
 import com.scurab.android.myplaces.interfaces.OnLocationListener;
 import com.scurab.android.myplaces.overlay.MyPlaceOverlay;
@@ -40,7 +41,7 @@ import com.scurab.android.myplaces.util.DialogBuilder;
 import com.scurab.android.myplaces.widget.MapItemPanel;
 import com.scurab.android.myplaces.widget.SmileyDialog;
 
-public class MainActivityPresenter15 extends BasePresenter implements ActivityOptionsMenuListener, ActivityLifecycleListener
+public class MainActivityPresenter15 extends BasePresenter implements ActivityOptionsMenuListener, ActivityLifecycleListener, ActivityOnBackPressed
 {
 	public static final int STATE_DEFAULT = 0;
 	public static final int STATE_ADDING_NEW_ITEM = 1;
@@ -106,6 +107,8 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
 				onMyLocationClick();
 			}
 		});
+		
+		mContext.setOnBackPressedListener(this);
 	}
 	
 	public void onMyLocationClick()
@@ -623,5 +626,15 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
 					super.handleMessage(msg);
 			}
 		}
+	}
+
+	@Override
+	public boolean onBackPressed()
+	{		
+		MapItemPanel mip = mContext.getMapItemPanel();
+		boolean res = mip.isVisible();
+		if(res)
+			mip.hide();
+		return res;
 	}
 }

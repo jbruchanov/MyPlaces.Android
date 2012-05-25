@@ -8,6 +8,7 @@ import android.view.ContextMenu.ContextMenuInfo;
 import com.google.android.maps.MapActivity;
 import com.scurab.android.myplaces.interfaces.ActivityContextMenuListener;
 import com.scurab.android.myplaces.interfaces.ActivityLifecycleListener;
+import com.scurab.android.myplaces.interfaces.ActivityOnBackPressed;
 import com.scurab.android.myplaces.interfaces.ActivityOptionsMenuListener;
 import com.scurab.android.myplaces.presenter.BasePresenter;
 
@@ -18,6 +19,7 @@ public abstract class BaseMapActivity extends MapActivity
 	private ActivityContextMenuListener mContextListener;
 	private ActivityOptionsMenuListener mOptionsListener;
 	private ActivityLifecycleListener mActivityListener;
+	private ActivityOnBackPressed mOnBackPressedListener;
 	
 	public void setActivityContextMenuListener(ActivityContextMenuListener listener)
 	{
@@ -89,6 +91,21 @@ public abstract class BaseMapActivity extends MapActivity
 		super.onStop();
 		if(mActivityListener != null)
 			mActivityListener.onStop();
+	}
+	
+	@Override
+	public void onBackPressed()
+	{		
+		boolean b = false;
+		if(mOnBackPressedListener != null)
+			b = mOnBackPressedListener.onBackPressed();
+		if(!b)
+			super.onBackPressed();
+	}
+	
+	public void setOnBackPressedListener(ActivityOnBackPressed onBackPressedListener)
+	{
+		mOnBackPressedListener = onBackPressedListener;
 	}
 	
 }
