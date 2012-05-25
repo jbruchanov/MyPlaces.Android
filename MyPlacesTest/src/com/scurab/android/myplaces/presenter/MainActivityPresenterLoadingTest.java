@@ -37,11 +37,8 @@ public class MainActivityPresenterLoadingTest extends AndroidTestCase
 	{
 		mmap = new MockMainActivityPresenter(new MockMainActivity(mContext));		
 		mmap.stars = true;
-		mmap.onLoadingStars();
+		mmap.onLoadingStarsImpl();
 		msc.DOWNLOAD_COUNT = 1;
-		Log.v("testInitLoadStars", "Waiting to interrupt by another thread");
-		for(int i = 0;i<Integer.MAX_VALUE && !checkedStars;i++)		
-			Log.v("testInitLoadStars", i + " waiting");
 		assertTrue(checkedStars);			
 	}
 
@@ -49,11 +46,8 @@ public class MainActivityPresenterLoadingTest extends AndroidTestCase
 	{
 		mmap = new MockMainActivityPresenter(new MockMainActivity(mContext));
 		mmap.mapitems = true;
-		mmap.onLoadingMapItems();
+		mmap.onLoadingMapItemsImpl();
 		msc.DOWNLOAD_COUNT = 1;
-		Log.v("testInitLoadStars", "Waiting to interrupt by another thread");
-		for(int i = 0;i<Integer.MAX_VALUE && !checkedMapItems;i++)		
-			Log.v("testInitLoadMapItems", i + " waiting");
 		assertTrue(checkedMapItems);			
 	}
 	
@@ -61,11 +55,8 @@ public class MainActivityPresenterLoadingTest extends AndroidTestCase
 	{
 		mmap = new MockMainActivityPresenter(new MockMainActivity(mContext));
 		mmap.stars = true;
-		mmap.onLoadingStars();
+		mmap.onLoadingStarsImpl();
 		msc.DOWNLOAD_COUNT = 1;
-		Log.v("testLoadToListOverlaysStars", "Waiting to interrupt by another thread");
-		for(int i = 0;i<Integer.MAX_VALUE && !checkedLoadedItemsToMap;i++)		
-			Log.v("testLoadToListOverlaysMap", i + " waiting");
 		assertTrue(checkedLoadedItemsToMap);
 		assertEquals(msc.DOWNLOAD_COUNT, mmap.getOverlayList().size());
 	}
@@ -74,11 +65,8 @@ public class MainActivityPresenterLoadingTest extends AndroidTestCase
 	{
 		mmap = new MockMainActivityPresenter(new MockMainActivity(mContext));
 		mmap.mapitems = true;
-		mmap.onLoadingMapItems();		
+		mmap.onLoadingMapItemsImpl();		
 		msc.DOWNLOAD_COUNT = 1;
-		Log.v("testLoadToListOverlaysStars", "Waiting to interrupt by another thread");
-		for(int i = 0;i<Integer.MAX_VALUE && !checkedLoadedItemsToMap;i++)		
-			Log.v("testLoadToListOverlaysMapItems", i + " waiting");
 		assertTrue(checkedLoadedItemsToMap);
 		assertEquals(msc.DOWNLOAD_COUNT, mmap.getOverlayList().size());
 	}

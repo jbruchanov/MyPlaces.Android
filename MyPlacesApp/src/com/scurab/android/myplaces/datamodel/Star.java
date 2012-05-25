@@ -7,7 +7,7 @@ public class Star extends MapElement
 {
 	private long id;
 	private String note;
-	private String type;
+	private String type = "10";
 	private double x;
 	private double y;
 	
