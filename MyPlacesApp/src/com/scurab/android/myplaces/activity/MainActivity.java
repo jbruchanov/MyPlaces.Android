@@ -4,6 +4,7 @@ import com.google.android.maps.MapView;
 import com.scurab.android.myplaces.R;
 import com.scurab.android.myplaces.presenter.BasePresenter;
 import com.scurab.android.myplaces.presenter.MainActivityPresenter15;
+import com.scurab.android.myplaces.widget.MapItemPanel;
 
 import android.os.Bundle;
 import android.view.View;
@@ -17,6 +18,7 @@ public class MainActivity extends BaseMapActivity {
 	private ImageButton mMyLocation;
 	private ProgressBar mProgressBar;
 	private MainActivityPresenter15 mPresenter;
+	private MapItemPanel mMapItemPanel;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,6 +39,7 @@ public class MainActivity extends BaseMapActivity {
     	mMapView = (MapView)findViewById(R.id.mapView);
     	mMyLocation = (ImageButton)findViewById(R.id.ibMyLocation);
     	mProgressBar = (ProgressBar)findViewById(R.id.progressBar);
+    	mMapItemPanel = (MapItemPanel)findViewById(R.id.mapItemPanel);
     }
     
     protected int getContentViewResId()
@@ -77,5 +80,10 @@ public class MainActivity extends BaseMapActivity {
 	public BasePresenter getPresenter()
 	{
 		return mPresenter;
+	}
+	
+	public MapItemPanel getMapItemPanel()
+	{
+		return mMapItemPanel;
 	}
 }

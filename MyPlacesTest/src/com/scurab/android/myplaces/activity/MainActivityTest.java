@@ -17,5 +17,6 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
 		assertNotNull(ma.getMapView());
 		assertNotNull(ma.getProgressBar());
 		assertNotNull(ma.getMyLocationButton());
+		assertNotNull(ma.getMapItemPanel());
 	}
 }

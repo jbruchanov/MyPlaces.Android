@@ -45,4 +45,10 @@
         android:layout_margin="5dip"        
         android:src="@android:drawable/ic_menu_mylocation" />
 
+    <com.scurab.android.myplaces.widget.MapItemPanel
+        android:id="@+id/mapItemPanel"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"        
+         />        	
 </RelativeLayout>

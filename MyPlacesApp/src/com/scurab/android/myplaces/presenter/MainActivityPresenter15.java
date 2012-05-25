@@ -37,6 +37,7 @@ import com.scurab.android.myplaces.interfaces.OnLocationListener;
 import com.scurab.android.myplaces.overlay.MyPlaceOverlay;
 import com.scurab.android.myplaces.util.AppUtils;
 import com.scurab.android.myplaces.util.DialogBuilder;
+import com.scurab.android.myplaces.widget.MapItemPanel;
 import com.scurab.android.myplaces.widget.SmileyDialog;
 
 public class MainActivityPresenter15 extends BasePresenter implements ActivityOptionsMenuListener, ActivityLifecycleListener
@@ -371,6 +372,10 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
 	
 	public boolean onMapItemTap(MyPlaceOverlay<MapItem> overlay)
 	{
+		MapItemPanel mip = mContext.getMapItemPanel();
+		mip.setMapItem(overlay.getObject());
+		mContext.getMapItemPanel().show();
+		mMapView.getController().animateTo(overlay.getCenter());
 		return true;
 	}
 	
@@ -407,6 +412,7 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
 			mapOverlays.remove(mMyLocationOverlay);
 		}
 		mMyLocationOverlay = null;
+		mMapView.invalidate();
 	}
 	
 	/**

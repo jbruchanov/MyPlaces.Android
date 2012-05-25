@@ -195,4 +195,19 @@ public class MapItem extends MapElement
 	{
 		this.rating = rating;
 	}
+	
+	@Override
+	public String toString()
+	{
+		String result = name + "\n";
+		if(street != null)
+			result += street + "\n";
+		if(city != null)
+			result += city + "\n";
+		if(contact != null)
+			result += contact + "\n";
+		if(web != null)
+			result += web;
+		return result;
+	}
 }

@@ -15,6 +15,7 @@ import android.test.AndroidTestCase;
 import android.util.Log;
 import android.widget.ImageButton;
 
+
 public class MainActivityPresenterLoadingTest extends AndroidTestCase
 {
 	private volatile MockMainActivityPresenter mmap;
