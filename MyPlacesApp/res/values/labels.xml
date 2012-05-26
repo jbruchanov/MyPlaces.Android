@@ -9,4 +9,20 @@
     <string name="lblOK">OK</string>
     <string name="lblDelete">Delete</string>
     <string name="lblDeleteStar">Delete Star</string>
+    
+    <string name="lblName">Name</string>
+    <string name="lblStreet">Street</string>
+    <string name="lblCity">City</string>
+    <string name="lblCountry">Country</string>
+    <string name="lblType">Type</string>
+    <string name="lblContact">Contact</string>
+    <string name="lblWebLink">Weblink</string>
+    <string name="lblAuthor">Author</string>
+    <string name="lblRating">Rating</string>
+    <string name="lblLongtitude">Longtitude</string>
+    <string name="lblLatitude">Latitude</string>
+    <string name="lblContext">Context</string>
+    <string name="lblStreetView">StreetView</string>
+    <string name="lblSave">Save</string>
+    <string name="lblAdd">Add</string>
 </resources>

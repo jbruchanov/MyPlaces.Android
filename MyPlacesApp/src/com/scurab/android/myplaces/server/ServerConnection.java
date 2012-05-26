@@ -68,6 +68,17 @@ public class ServerConnection
 		return result;
 	}
 	
+	public MapItem getDetailedMapItem(long id) throws IOException
+	{
+		String response = downloadMapItem(id);
+		@SuppressWarnings("unchecked")
+		MapItem[] result = sGson.fromJson(response, MapItem[].class);
+		if(result != null && result.length == 1)
+			return result[0];
+		else
+			return null;
+	}
+	
 	public Star save(Star s)
 	{
 		ClientResource resource = getClientResource(mStarsUrl);
@@ -92,6 +103,13 @@ public class ServerConnection
 	protected String downloadMapItems(double left, double top, double right, double bottom) throws IOException
 	{
 		ClientResource resource = getClientResource(String.format(mMapItemsTemplateUrl,left,bottom,right,top));
+		String response = resource.get().getText();
+		return response;
+	}
+	
+	protected String downloadMapItem(long id) throws IOException
+	{
+		ClientResource resource = getClientResource(String.format(mMapItemTemplateUrl,id));
 		String response = resource.get().getText();
 		return response;
 	}

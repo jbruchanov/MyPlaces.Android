@@ -1,10 +1,13 @@
 package com.scurab.android.myplaces.widget;
 
+import com.scurab.android.myplaces.M;
 import com.scurab.android.myplaces.R;
+import com.scurab.android.myplaces.activity.MapItemActivity;
 import com.scurab.android.myplaces.datamodel.MapItem;
 import com.scurab.android.myplaces.util.IntentHelper;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.View;
@@ -143,7 +146,12 @@ public class MapItemPanel extends LinearLayout implements View.OnClickListener
 		else if(v == mShareImageButton)
 			IntentHelper.sendText(mContext, getMapItem().toString());		
 		else if(v == mMoreImageButton)
-			Toast.makeText(mContext, "More", Toast.LENGTH_SHORT).show();
+		{
+			Intent i = new Intent(mContext,MapItemActivity.class);
+			i.putExtra(M.Constants.MAP_ITEM, getMapItem());
+			i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+			mContext.startActivity(i);
+		}
 	}
 
 	public boolean isAnimations()

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_marginTop="10dip" 
+       android:layout_marginBottom="10dip"
+        >
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dip"
+        android:layout_marginRight="5dip"
+       
+        android:orientation="vertical" >
+        <TextView
+            style="@style/mapItemDetailLabel"
+            android:text="@string/lblName" />
+        <EditText
+            android:id="@+id/etName"
+            style="@style/mapItemDetailEditText" />
+        
+        <TextView
+            style="@style/mapItemDetailLabel"
+            android:text="@string/lblStreet" />
+        <EditText
+            android:id="@+id/etStreet"
+            style="@style/mapItemDetailEditText" />
+        
+        <TextView
+            style="@style/mapItemDetailLabel"
+            android:text="@string/lblCity" />
+        <EditText
+            android:id="@+id/etCity"
+            style="@style/mapItemDetailEditText" />
+        
+        <TextView
+            style="@style/mapItemDetailLabel"
+            android:text="@string/lblCountry" />
+        <EditText
+            android:id="@+id/etCountry"
+            style="@style/mapItemDetailEditText" />
+        
+        <TextView
+            style="@style/mapItemDetailLabel"
+            android:text="@string/lblType" />
+        <Spinner
+            android:id="@+id/spType"            
+            style="@style/mapItemDetailEditText" />
+        
+        <TextView
+            style="@style/mapItemDetailLabel"
+            android:text="@string/lblContact" />
+        <EditText
+            android:id="@+id/etContact"
+            style="@style/mapItemDetailEditText" />
+        
+        <TextView
+            style="@style/mapItemDetailLabel"
+            android:text="@string/lblWebLink" />
+        <EditText
+            android:id="@+id/etWebLink"
+            style="@style/mapItemDetailEditText" />
+        
+        <TextView
+            style="@style/mapItemDetailLabel"
+            android:text="@string/lblAuthor" />
+        <EditText
+            android:id="@+id/etAuthor"
+            style="@style/mapItemDetailEditText" />
+        
+        <TextView
+            style="@style/mapItemDetailLabel"
+            android:text="@string/lblRating" />
+        <RatingBar
+            android:id="@+id/ratingBar"
+            android:stepSize="0.5"
+            android:numStars="5"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        
+        <TextView
+            style="@style/mapItemDetailLabel"
+            android:text="@string/lblLongtitude" />
+        <TextView
+            android:id="@+id/tvLongtitude"
+            android:text="50.4123456"
+             style="@style/mapItemDetailCoordLabel" />
+        
+        <TextView
+            style="@style/mapItemDetailLabel"
+            android:text="@string/lblLatitude" />
+        <TextView
+            android:id="@+id/tvLatitude"
+            android:text="14.4123456"
+            style="@style/mapItemDetailCoordLabel" />
+    </LinearLayout>
+</ScrollView>

@@ -280,16 +280,19 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
 		if(stars.length == 0)
 			return;
 		List<Overlay> mapOverlays = getOverlayList();
-		for(Star s : stars)
+		synchronized (mapOverlays)
 		{
-			MyPlaceOverlay<Star> so = new MyPlaceOverlay<Star>(mContext, s);
-			so.setTapListener(new MyPlaceOverlay.OnTapListener<Star>(){
-				@SuppressWarnings("unchecked")
-				@Override public void onTap(MyPlaceOverlay<?> item){onStarTap((MyPlaceOverlay<Star>) item);}}
-			);
-			mapOverlays.add(so);
-			mStarOverlays.add(so);
-		}		
+			for(Star s : stars)
+			{
+				MyPlaceOverlay<Star> so = new MyPlaceOverlay<Star>(mContext, s);
+				so.setTapListener(new MyPlaceOverlay.OnTapListener<Star>(){
+					@SuppressWarnings("unchecked")
+					@Override public void onTap(MyPlaceOverlay<?> item){onStarTap((MyPlaceOverlay<Star>) item);}}
+				);
+				mapOverlays.add(so);
+				mStarOverlays.add(so);
+			}
+		}
 		mHandler.sendEmptyMessage(PresenterHandler.INVALIDATE_MAP);
 	}
 	
@@ -428,16 +431,19 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
 			return;
 
 		List<Overlay> mapOverlays = getOverlayList();
-		for(MapItem s : items)
+		synchronized (mapOverlays)
 		{
-			MyPlaceOverlay<MapItem> so = new MyPlaceOverlay<MapItem>(mContext, s);
-			so.setTapListener(new MyPlaceOverlay.OnTapListener<MapItem>(){
-				@SuppressWarnings("unchecked")
-				@Override public void onTap(MyPlaceOverlay<?> item){onMapItemTap((MyPlaceOverlay<MapItem>) item);}}
-			);
-			mMapItemOverlays.add(so);
-			mapOverlays.add(so);
-		}		
+			for(MapItem s : items)
+			{
+				MyPlaceOverlay<MapItem> so = new MyPlaceOverlay<MapItem>(mContext, s);
+				so.setTapListener(new MyPlaceOverlay.OnTapListener<MapItem>(){
+					@SuppressWarnings("unchecked")
+					@Override public void onTap(MyPlaceOverlay<?> item){onMapItemTap((MyPlaceOverlay<MapItem>) item);}}
+				);
+				mMapItemOverlays.add(so);
+				mapOverlays.add(so);
+			}
+		}
 		mHandler.sendEmptyMessage(PresenterHandler.INVALIDATE_MAP);
 	}
 

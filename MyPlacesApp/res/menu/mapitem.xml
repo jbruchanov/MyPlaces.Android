@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item android:id="@+id/muDelete" android:title="@string/lblDelete" android:icon="@android:drawable/ic_menu_delete" android:showAsAction="ifRoom|withText"/>
+    <item android:id="@+id/muSave" android:title="@string/lblSave" android:icon="@android:drawable/ic_menu_save" android:showAsAction="ifRoom|withText"/>
+    <item android:id="@+id/muAdd" android:title="@string/lblAdd" android:icon="@android:drawable/ic_menu_add" android:showAsAction="ifRoom|withText"/>
+</menu>

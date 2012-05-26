@@ -1,11 +1,13 @@
 package com.scurab.android.myplaces.datamodel;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.scurab.android.myplaces.R;
 import com.scurab.android.myplaces.util.AppUtils;
 
-public class MapItem extends MapElement
+public class MapItem extends MapElement implements Serializable
 {
 	private long id;
 	private String type;
@@ -209,5 +211,31 @@ public class MapItem extends MapElement
 		if(web != null)
 			result += web;
 		return result;
+	}
+	
+	private transient List<MapItemDetailItem> mDataForAdapter;
+	
+	public List<MapItemDetailItem> getDataForAdapter()
+	{
+		if(mDataForAdapter == null)
+		{
+			mDataForAdapter = new ArrayList<MapItemDetailItem>();
+			if(pros != null)
+			{
+				for(String pro : pros)
+					mDataForAdapter.add(new MapItemDetailItem(pro, MapItemDetailItem.TYPE_PRO));
+			}
+			if(cons != null)
+			{
+				for(String con : cons)
+					mDataForAdapter.add(new MapItemDetailItem(con, MapItemDetailItem.TYPE_CON));
+			}
+			if(details != null)
+			{
+				for(Detail d : details)
+					mDataForAdapter.add(new MapItemDetailItem(d));
+			}
+		}
+		return mDataForAdapter;
 	}
 }

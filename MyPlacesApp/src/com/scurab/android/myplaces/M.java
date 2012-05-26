@@ -15,6 +15,7 @@ public class M
 	public static final class Constants
 	{
 		public static final int DIALOG_EDITTEXT_ID = 0x91237489;
+		public static final String MAP_ITEM = "MAP_ITEM";
 	}
 
 	private M(){}	
