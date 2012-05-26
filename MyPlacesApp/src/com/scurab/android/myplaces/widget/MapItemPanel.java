@@ -117,6 +117,8 @@ public class MapItemPanel extends LinearLayout implements View.OnClickListener
 	public void hide()
 	{	
 		mMapItem = null;
+		if(!isVisible())
+			return;
 		if(isAnimations())
 			this.startAnimation(mAnimationDown);
 		else
