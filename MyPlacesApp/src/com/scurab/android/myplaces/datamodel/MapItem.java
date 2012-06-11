@@ -10,16 +10,16 @@ import com.scurab.android.myplaces.util.AppUtils;
 public class MapItem extends MapElement implements Serializable
 {
 	private long id;
-	private String type;
+	private String type = "";
 	
-	private String name;
-	private String country;
-	private String city;
-	private String street;
-	private String web;
-	private String streetViewLink;
-	private String author;
-	private String contact;
+	private String name = "";
+	private String country = "";
+	private String city = "";
+	private String street = "";
+	private String web = "";
+	private String streetViewLink = "";
+	private String author = "";
+	private String contact = "";
 	
 	private double x;
 	private double y;

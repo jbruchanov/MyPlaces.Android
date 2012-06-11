@@ -14,6 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.RatingBar;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 public class MapItemDetailFragment extends Fragment
 {
@@ -27,6 +28,8 @@ public class MapItemDetailFragment extends Fragment
 	private EditText mWeblink;
 	private EditText mAuthor;
 	private RatingBar mRatingBar;
+	private TextView mX;
+	private TextView mY;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -49,7 +52,9 @@ public class MapItemDetailFragment extends Fragment
 		mContact = (EditText)mContentView.findViewById(R.id.etContact);
 		mWeblink= (EditText)mContentView.findViewById(R.id.etWebLink);
 		mAuthor = (EditText)mContentView.findViewById(R.id.etAuthor);
-		mRatingBar = (RatingBar)mContentView.findViewById(R.id.ratingBar);		
+		mRatingBar = (RatingBar)mContentView.findViewById(R.id.ratingBar);
+		mX = (TextView)mContentView.findViewById(R.id.tvLatitude);
+		mY = (TextView)mContentView.findViewById(R.id.tvLongtitude);
 		
 //		mRatingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener(){@Override public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser){mAuthor.setText(String.valueOf(rating));}});
 		
@@ -70,7 +75,9 @@ public class MapItemDetailFragment extends Fragment
 		mContact.setText(mi.getContact());
 		mWeblink.setText(mi.getWeb());
 		mAuthor.setText(mi.getAuthor());
-		mRatingBar.setRating(mi.getRating()/2f);
+		mRatingBar.setRating(mi.getRating()/2f);	
+		mX.setText(String.valueOf(mi.getX()));
+		mY.setText(String.valueOf(mi.getY()));
 		
 		ArrayAdapter<String> sa = (ArrayAdapter<String>) mType.getAdapter();
 		if(sa != null)
@@ -129,6 +136,16 @@ public class MapItemDetailFragment extends Fragment
 	public EditText getAuthorEditText()
 	{
 		return mAuthor;
+	}
+	
+	public TextView getX()
+	{
+		return mX;
+	}
+	
+	public TextView getY()
+	{
+		return mY;
 	}
 
 	public void setMapItemTypes(String[] mapItemTypes)

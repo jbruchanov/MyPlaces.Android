@@ -1,5 +1,9 @@
 package com.scurab.android.myplaces.presenter;
 
+import com.google.android.maps.GeoPoint;
+import com.google.android.maps.MapController;
+import com.google.android.maps.MapView;
+import com.google.android.maps.Projection;
 import com.scurab.android.myplaces.M;
 import com.scurab.android.myplaces.MyPlacesApplication;
 import com.scurab.android.myplaces.R;
@@ -8,8 +12,10 @@ import com.scurab.android.myplaces.datamodel.MapItem;
 import com.scurab.android.myplaces.datamodel.MapItemDetailItem;
 import com.scurab.android.myplaces.fragment.MapItemContextFragment;
 import com.scurab.android.myplaces.fragment.MapItemDetailFragment;
+import com.scurab.android.myplaces.fragment.MapItemMapViewFragment;
 import com.scurab.android.myplaces.interfaces.ActivityContextMenuListener;
 import com.scurab.android.myplaces.interfaces.ActivityOptionsMenuListener;
+import com.scurab.android.myplaces.overlay.MyPlaceOverlay;
 import com.scurab.android.myplaces.server.ServerConnection;
 import com.scurab.android.myplaces.util.DialogBuilder;
 
@@ -25,6 +31,7 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.Toast;
@@ -38,6 +45,8 @@ public class MapItemActivityPresenter extends BasePresenter implements ActivityO
 	private Fragment mCurrentFragment;
 	private MapItemDetailFragment mDetailFragment;
 	private MapItemContextFragment mContextFragment;
+	private MapView mMapView;
+	private MyPlaceOverlay<MapItem> mCurrentMapItem;
 	
 	public MapItemActivityPresenter(MapItemActivity context)
 	{
@@ -53,13 +62,45 @@ public class MapItemActivityPresenter extends BasePresenter implements ActivityO
 			mDetailedItem = (MapItem) mContext.getIntent().getExtras().get(M.Constants.MAP_ITEM);
 			new LoadTask().execute(mDetailedItem.getId());
 		}
+		else
+		{
+			mDetailedItem = new MapItem();
+			mCurrentMapItem = new MyPlaceOverlay<MapItem>(mContext, mDetailedItem);
+		}
+		
 		bind();
 	}
 	
 	private void bind()
 	{
 		mContext.setActivityOptionsMenuListener(this);
-		mContext.setActivityContextMenuListener(this);
+		mContext.setActivityContextMenuListener(this);		
+	}
+	
+	private View.OnTouchListener mMapTouchListener = new View.OnTouchListener()
+	{
+		@Override
+		public boolean onTouch(View v, MotionEvent event)
+		{
+			boolean result = false;
+			if(event.getAction() == MotionEvent.ACTION_UP)
+			{				
+	            Projection proj = mMapView.getProjection();
+	            GeoPoint loc = proj.fromPixels((int)event.getX(), (int)event.getY());
+				onMapClick(loc);
+				result = true;
+			}
+			return result;
+		}
+	};
+	
+	public void onMapClick(GeoPoint loc)
+	{
+		mDetailedItem.setX(loc.getLongitudeE6()/M.COORD_HELP_MAPPER);
+		mDetailedItem.setY(loc.getLatitudeE6()/M.COORD_HELP_MAPPER);		
+		mCurrentMapItem = new MyPlaceOverlay<MapItem>(mContext, mDetailedItem);
+		setCurrentMapItemToMap(false);
+		mMapView.invalidate();
 	}
 	
 	public void selectTab(int indexTab)
@@ -76,8 +117,24 @@ public class MapItemActivityPresenter extends BasePresenter implements ActivityO
 			case R.id.muAdd:
 				onShowAddContextItemChooser();
 				break;
+			case R.id.muSave:
+				onSaveMapItem();
+				break;
+			case R.id.muDelete:
+				onDeleteMapItem();
+				break;
 		}
 		return false;
+	}
+	
+	public void onSaveMapItem()
+	{
+		Toast.makeText(mContext, "onSaveMapItem", Toast.LENGTH_SHORT).show();
+	}
+	
+	public void onDeleteMapItem()
+	{
+		Toast.makeText(mContext, "onDeleteMapItem", Toast.LENGTH_SHORT).show();
 	}
 	
 	public void onShowAddContextItemChooser()
@@ -171,10 +228,20 @@ public class MapItemActivityPresenter extends BasePresenter implements ActivityO
 			}
 			mCurrentFragment = mFragment;
 			
-			if(mTag.equals("1"))
-				mDetailFragment = (MapItemDetailFragment) mFragment;
-			else if(mTag.equals("3"))
+			boolean t3 = false;
+			if("1".equals(mTag))
 			{
+				mDetailFragment = (MapItemDetailFragment) mFragment;
+			}
+			else if("2".equals(mTag))
+			{				
+				mMapView = ((MapItemMapViewFragment) mFragment).getMapView(mContext);
+				mMapView.setOnTouchListener(mMapTouchListener);
+				setCurrentMapItemToMap(true);
+			}
+			else if("3".equals(mTag))
+			{
+				t3 = true;
 				mContextFragment = (MapItemContextFragment) mFragment;
 				if(callSetContext && mDetailedItem != null)
 					mContextFragment.setMapItem(mDetailedItem);
@@ -182,7 +249,6 @@ public class MapItemActivityPresenter extends BasePresenter implements ActivityO
 			
 			if(mMenu != null)
 			{
-				boolean t3 = mTag.equals("3");
 				mMenu.findItem(R.id.muAdd).setVisible(t3);
 				mMenu.findItem(R.id.muDelete).setVisible(!t3);
 				mMenu.findItem(R.id.muSave).setVisible(!t3);
@@ -245,10 +311,24 @@ public class MapItemActivityPresenter extends BasePresenter implements ActivityO
 				if(mContextFragment != null)
 					mContextFragment.setMapItem(result);
 				
-				mContext.setTitle(mDetailedItem.getTitle());
+				mContext.setTitle(mDetailedItem.getTitle());				
+				mCurrentMapItem = new MyPlaceOverlay<MapItem>(mContext, result);
+				if(mMapView != null)
+				{
+					setCurrentMapItemToMap(true);
+				}
 			}
 		}
 	}
-
 	
+	private void setCurrentMapItemToMap(boolean move)
+	{
+		mMapView.getOverlays().clear();
+		mMapView.getOverlays().add(mCurrentMapItem);
+		if(move)
+		{
+			MapController mc = mMapView.getController();
+			mc.setCenter(mCurrentMapItem.getCenter());
+		}
+	}
 }

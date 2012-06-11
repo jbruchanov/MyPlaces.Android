@@ -109,6 +109,7 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
 		});
 		
 		mContext.setOnBackPressedListener(this);
+		
 	}
 	
 	public void onMyLocationClick()
