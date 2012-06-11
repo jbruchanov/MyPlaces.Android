@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item android:id="@+id/muAddPro" android:title="+" android:icon="@drawable/ico_plus"/>
+    <item android:id="@+id/muAddCon" android:title="-" android:icon="@drawable/ico_minus"/>
+    <item android:id="@+id/muAddDetail" android:title="@string/lblDetail" android:icon="@drawable/ico_minus"/>
+</menu>

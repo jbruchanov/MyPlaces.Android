@@ -25,6 +25,7 @@ public class MapItemContextFragment extends Fragment
 		{
 			mContentView = inflater.inflate(R.layout.mapitem_context,null);
 			lvData = (ListView)mContentView.findViewById(R.id.lvData);
+			getActivity().registerForContextMenu(lvData);
 			if(mMapItem != null)
 				lvData.setAdapter(new DetailAdapter(getActivity(), mMapItem.getDataForAdapter()));
 		}
@@ -47,5 +48,10 @@ public class MapItemContextFragment extends Fragment
 		mMapItem = result;
 		if(getActivity() != null)
 			lvData.setAdapter(new DetailAdapter(getActivity(), result.getDataForAdapter()));
+	}
+	
+	public ListView getListView()
+	{
+		return lvData;
 	}
 }

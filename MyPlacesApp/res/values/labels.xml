@@ -25,4 +25,5 @@
     <string name="lblStreetView">StreetView</string>
     <string name="lblSave">Save</string>
     <string name="lblAdd">Add</string>
+    <string name="lblDetail">Detail</string>
 </resources>
