@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="240dip"
+    android:layout_height="80dip"
+    android:layout_gravity="center"
+    android:layout_margin="5dip"
+    android:gravity="center" >
+
+    <ImageButton
+        android:id="@+id/ibPro"
+        android:layout_width="0dip"
+        android:layout_weight="1"
+        android:layout_height="fill_parent"
+        android:src="@drawable/ico_add" />
+
+    <ImageButton
+        android:id="@+id/ibCon"
+        android:layout_width="0dip"
+        android:layout_weight="1"
+        android:layout_height="fill_parent"
+        android:src="@drawable/ico_error" />
+
+    <ImageButton
+        android:id="@+id/ibDetail"
+        android:layout_width="0dip"
+        android:layout_weight="1"
+        android:layout_height="fill_parent"
+        android:src="@drawable/ico_edit" />
+
+</LinearLayout>

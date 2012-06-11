@@ -11,9 +11,11 @@ import com.scurab.android.myplaces.fragment.MapItemDetailFragment;
 import com.scurab.android.myplaces.interfaces.ActivityContextMenuListener;
 import com.scurab.android.myplaces.interfaces.ActivityOptionsMenuListener;
 import com.scurab.android.myplaces.server.ServerConnection;
+import com.scurab.android.myplaces.util.DialogBuilder;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.app.ActionBar.Tab;
@@ -71,9 +73,31 @@ public class MapItemActivityPresenter extends BasePresenter implements ActivityO
 	{
 		switch(item.getItemId())
 		{
-			
+			case R.id.muAdd:
+				onShowAddContextItemChooser();
+				break;
 		}
 		return false;
+	}
+	
+	public void onShowAddContextItemChooser()
+	{
+		AlertDialog ad = DialogBuilder.getAddMapItemContextDialog(mContext, mOnAddMapItenContextButtonClickListener);
+		ad.show();
+	}
+	
+	private DialogBuilder.OnAddMapItenContextButtonClickListener mOnAddMapItenContextButtonClickListener = new DialogBuilder.OnAddMapItenContextButtonClickListener()	
+	{
+		@Override
+		public void onClick(View v, int type)
+		{
+			onAddContextItem(type);
+		}
+	};
+	
+	public void onAddContextItem(int type)
+	{
+		Toast.makeText(mContext, String.valueOf(type), Toast.LENGTH_SHORT).show();
 	}
 
 	@Override
