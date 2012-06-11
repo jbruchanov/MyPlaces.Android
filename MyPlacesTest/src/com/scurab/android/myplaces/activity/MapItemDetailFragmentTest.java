@@ -51,8 +51,8 @@ public class MapItemDetailFragmentTest extends ActivityInstrumentationTestCase2<
 	{
 		MapItemActivity a = getActivity();
 		
-		a.selectTab(0);
-		MapItemDetailFragment f = (MapItemDetailFragment) a.getCurrentFragment(); 		
+		a.getPresenter().selectTab(0);
+		MapItemDetailFragment f = (MapItemDetailFragment) a.getPresenter().getCurrentFragment(); 		
 		
 		assertNotNull(f.getNameEditText());
 		assertEquals(R.id.etName, f.getNameEditText().getId());
@@ -86,8 +86,8 @@ public class MapItemDetailFragmentTest extends ActivityInstrumentationTestCase2<
 	{
 		setActivityIntent();
 		MapItemActivity a = getActivity();
-		a.selectTab(0);
-		MapItemDetailFragment f = (MapItemDetailFragment) a.getCurrentFragment();
+		a.getPresenter().selectTab(0);
+		MapItemDetailFragment f = (MapItemDetailFragment) a.getPresenter().getCurrentFragment();
 		
 		MapItem mi =  (MapItem) a.getIntent().getExtras().get(M.Constants.MAP_ITEM);
 		assertNotNull(mi);

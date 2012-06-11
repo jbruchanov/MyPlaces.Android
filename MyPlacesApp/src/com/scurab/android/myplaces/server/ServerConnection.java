@@ -7,6 +7,7 @@ import org.restlet.Response;
 import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
 import org.restlet.resource.ClientResource;
+import org.restlet.resource.ResourceException;
 
 import com.google.gson.Gson;
 import com.scurab.android.myplaces.datamodel.MapItem;
@@ -24,6 +25,7 @@ public class ServerConnection
 	
 	private final String mServerUrl;
 	private final String mStarsUrl;
+	private final String mMapItemTypesUrl;
 	private final String mMapItemTemplateUrl;
 	private final String mMapItemsTemplateUrl;
 	
@@ -31,6 +33,7 @@ public class ServerConnection
 	private final String STARS_DELETE_SUFFIX = "/stars/%s";
 	private final String MAPITEM_SUFFIX = "/mapitems/%s";
 	private final String MAPITEMS_SUFFIX = "/mapitems/%s/%s/%s/%s";
+	private final String MAPITEM_TYPES_SUFFIX = "/mapitemtypes";
 	
 	/**
 	 * Create connection provider to server
@@ -45,6 +48,7 @@ public class ServerConnection
 		mStarsUrl = mServerUrl + STARS_SUFFIX;
 		mMapItemTemplateUrl = mServerUrl + MAPITEM_SUFFIX;
 		mMapItemsTemplateUrl = mServerUrl + MAPITEMS_SUFFIX;
+		mMapItemTypesUrl = mServerUrl + MAPITEM_TYPES_SUFFIX;
 	}
 	
 	public String getServerUrl()
@@ -68,6 +72,13 @@ public class ServerConnection
 		MapItem[] result = sGson.fromJson(response, MapItem[].class);
 		if(result == null) result = new MapItem[]{};
 		return result;
+	}
+	
+	public String[] getMapItemTypes() throws ResourceException, IOException
+	{
+		ClientResource resource = getClientResource(mMapItemTypesUrl);		
+		String result = resource.get().getText();
+		return sGson.fromJson(result, String[].class);
 	}
 	
 	public MapItem getDetailedMapItem(long id) throws IOException
