@@ -57,7 +57,8 @@ public class MapItemDetailFragment extends Fragment
 		if(i.hasExtra(M.Constants.MAP_ITEM))
 		{
 			MapItem mi = (MapItem) i.getExtras().get(M.Constants.MAP_ITEM);
-			setMapItem(mi);
+			if(mi != null)
+				setMapItem(mi);
 		}
 	}
 	

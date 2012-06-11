@@ -39,6 +39,8 @@ public class ServerConnection
 	 */
 	public ServerConnection(String serverAddress)
 	{
+		if(serverAddress == null || "".equals(serverAddress))
+			serverAddress = "http://10.1.1.11";
 		mServerUrl = serverAddress;
 		mStarsUrl = mServerUrl + STARS_SUFFIX;
 		mMapItemTemplateUrl = mServerUrl + MAPITEM_SUFFIX;

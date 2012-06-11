@@ -201,11 +201,14 @@ public class MapItemActivity extends BaseMapActivity
 		
 		@Override
 		protected void onPostExecute(MapItem result)
-		{
+		{			
 			mDetailedItem = result;
-			mDetailFragment.setMapItem(result);
-			if(mContextFragment != null)
-				mContextFragment.setMapItem(result);
+			if(result != null)
+			{
+				mDetailFragment.setMapItem(result);
+				if(mContextFragment != null)
+					mContextFragment.setMapItem(result);
+			}
 		}
 	}
 }

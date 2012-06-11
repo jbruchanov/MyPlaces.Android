@@ -150,10 +150,15 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
 	private void init()
 	{
 		mMapView = mContext.getMapView();
-		mHandler = new PresenterHandler(mContext);
+		mHandler = createHandler(mContext);
 		mStarOverlays = new ArrayList<MyPlaceOverlay<Star>>();
 		mMapItemOverlays = new ArrayList<MyPlaceOverlay<MapItem>>();
 		loadData();
+	}
+	
+	protected PresenterHandler createHandler(Context c)
+	{
+		return new PresenterHandler(mContext);
 	}
 	
 	protected void loadData()
@@ -597,7 +602,7 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
 		});
 	}
 	
-	private class PresenterHandler extends Handler
+	protected class PresenterHandler extends Handler
 	{		
 		public static final int HIDE_PROGRESSBAR = 1;
 		public static final int REMOVE_MYLOCATION_OVERLAY = 2;

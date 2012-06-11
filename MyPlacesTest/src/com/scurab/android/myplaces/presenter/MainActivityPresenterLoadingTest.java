@@ -11,6 +11,7 @@ import com.scurab.android.myplaces.server.MockServerConnection;
 import com.scurab.android.myplaces.server.ServerConnection;
 
 import android.content.Context;
+import android.os.Message;
 import android.test.AndroidTestCase;
 import android.util.Log;
 import android.widget.ImageButton;
@@ -94,6 +95,12 @@ public class MainActivityPresenterLoadingTest extends AndroidTestCase
 		}
 		
 		@Override
+		protected PresenterHandler createHandler(Context c)
+		{		
+			return new MockPresenterHandler(this, c);
+		}
+		
+		@Override
 		public void onLoadedStars(Star[] stars)
 		{
 			
@@ -145,6 +152,20 @@ public class MainActivityPresenterLoadingTest extends AndroidTestCase
 		public ImageButton getMyLocationButton()
 		{
 			return new ImageButton(mContext);
+		}
+	}
+
+	private class MockPresenterHandler extends MainActivityPresenter15.PresenterHandler
+	{
+		public MockPresenterHandler(MainActivityPresenter15 mainActivityPresenter15, Context c)
+		{
+			mainActivityPresenter15.super(c);
+		}
+		
+		@Override
+		public void handleMessage(Message msg)
+		{
+			
 		}
 	}
 }
