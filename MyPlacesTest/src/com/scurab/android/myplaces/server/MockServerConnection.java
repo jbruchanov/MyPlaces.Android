@@ -2,6 +2,8 @@ package com.scurab.android.myplaces.server;
 
 import java.io.IOException;
 
+import org.restlet.resource.ResourceException;
+
 import android.text.Html;
 import com.scurab.android.myplaces.server.ServerConnection;
 
@@ -50,6 +52,12 @@ public class MockServerConnection extends ServerConnection
 									+ "{\"id\":9973128346314856,\"type\":\"Hospoda\",\"name\":\"Legenda\",\"country\":\"CZ\",\"city\":\"Prague\",\"street\":\"Legerova\",\"web\":\"www.ilegenda.cz\",\"streetViewLink\":\"X\\u003d14.430375;Y\\u003d50.073803;YAW\\u003d278.3;PITCH\\u003d-3.65;ZOOM\\u003d0\",\"contact\":\"(+420) 737 626 848, (+420) 296 180 310\",\"x\":14.430333,\"y\":50.073795,\"rating\":4},"
 									+ "{\"id\":9973988218395496,\"type\":\"Restaurace\",\"name\":\"U Z\u00e1bransk\u00fdch\",\"country\":\"CZ\",\"city\":\"Prague\",\"street\":\"K\u0159\u00ed\u017ekova 330\",\"web\":\"www.uzabranskych.cz\",\"streetViewLink\":\"X\\u003d14.453203;Y\\u003d50.09298;YAW\\u003d0;PITCH\\u003d5;ZOOM\\u003d0\",\"author\":\"Luc\",\"x\":14.45318,\"y\":50.09304,\"rating\":0}]")
 					.toString();
+	}
+	
+	@Override
+	public String[] getMapItemTypes() throws ResourceException, IOException
+	{	
+		return  new String[] {"Bar","Cafe-Pub","Café","Club","Fastfood","Hospoda","Kavárna","Pizzerie","Restaurace","Zahrádka"};
 	}
 
 }

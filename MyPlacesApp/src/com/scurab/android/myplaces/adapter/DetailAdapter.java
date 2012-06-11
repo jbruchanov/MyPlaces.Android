@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.scurab.android.myplaces.R;
 import com.scurab.android.myplaces.datamodel.Detail;
-import com.scurab.android.myplaces.datamodel.MapItem;
 import com.scurab.android.myplaces.datamodel.MapItemDetailItem;
 
 import android.content.Context;

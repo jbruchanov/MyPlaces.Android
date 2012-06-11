@@ -8,10 +8,9 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.RatingBar;
 import android.widget.Spinner;
@@ -72,6 +71,19 @@ public class MapItemDetailFragment extends Fragment
 		mWeblink.setText(mi.getWeb());
 		mAuthor.setText(mi.getAuthor());
 		mRatingBar.setRating(mi.getRating()/2f);
+		
+		ArrayAdapter<String> sa = (ArrayAdapter<String>) mType.getAdapter();
+		if(sa != null)
+		{
+			for(int i = 0,n=sa.getCount();i<n;i++)
+			{
+				if(sa.getItem(i).equals(mi.getType()))
+				{
+					mType.setSelection(i);
+					break;
+				}
+			}
+		}
 	}
 
 	public EditText getNameEditText()
@@ -117,6 +129,11 @@ public class MapItemDetailFragment extends Fragment
 	public EditText getAuthorEditText()
 	{
 		return mAuthor;
+	}
+
+	public void setMapItemTypes(String[] mapItemTypes)
+	{
+		mType.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, mapItemTypes));
 	}
 	
 }
