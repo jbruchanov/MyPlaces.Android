@@ -297,4 +297,30 @@ public class MapItem extends MapElement implements Serializable
 			}
 		}
 	}
+	public void addDetail(Detail newValue)
+	{
+		if(details == null)
+			details = new ArrayList<Detail>();
+		details.add(newValue);
+		if(mDataForAdapter != null)
+			mDataForAdapter.add(new MapItemDetailItem(newValue));
+	}
+	
+	public void removeDetail(Detail value)
+	{
+		if(details != null)
+			details.remove(value);
+			
+		if(mDataForAdapter != null)
+		{
+			for(MapItemDetailItem mdi : mDataForAdapter)
+			{
+				if(mdi.getType() == MapItemDetailItem.TYPE_DETAIL && mdi.getDetailValue().equalsByValues(value))
+				{
+					mDataForAdapter.remove(mdi);
+					break;
+				}
+			}
+		}
+	}
 }

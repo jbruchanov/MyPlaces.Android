@@ -9,6 +9,7 @@ import com.scurab.android.myplaces.MyPlacesApplication;
 import com.scurab.android.myplaces.R;
 import com.scurab.android.myplaces.activity.MapItemActivity;
 import com.scurab.android.myplaces.adapter.DetailAdapter;
+import com.scurab.android.myplaces.datamodel.Detail;
 import com.scurab.android.myplaces.datamodel.MapItem;
 import com.scurab.android.myplaces.datamodel.MapItemDetailItem;
 import com.scurab.android.myplaces.fragment.MapItemContextFragment;
@@ -22,6 +23,7 @@ import com.scurab.android.myplaces.overlay.MyPlaceOverlayItem;
 import com.scurab.android.myplaces.server.ServerConnection;
 import com.scurab.android.myplaces.util.DialogBuilder;
 import com.scurab.android.myplaces.widget.EditTextDialog;
+import com.scurab.android.myplaces.widget.MapItemDetailDialog;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -201,12 +203,29 @@ public class MapItemActivityPresenter extends BasePresenter implements ActivityO
 		mdi.notifyDataSetChanged();
 	}
 	
+	public void onUpdateContextItem(MapItemDetailDialog mdd)
+	{
+		MapItemDetailItem midi = (MapItemDetailItem) mdd.getTag();
+		Detail newValue = mdd.getDetail();
+		if(midi != null)//edit
+		{
+			Detail oldDetail = midi.getDetailValue();
+			oldDetail.setValues(newValue);
+		}
+		else
+		{
+			mDetailedItem.addDetail(newValue);
+		}
+		DetailAdapter mdi = (DetailAdapter) mContextFragment.getListView().getAdapter(); 
+		mdi.notifyDataSetChanged();
+	}
+	
 	public void onAddingContextItem(final int type)
 	{
 		AlertDialog ad = null;
 		if(type == DialogBuilder.OnAddMapItenContextButtonClickListener.DETAIL)
 		{
-			
+			ad = DialogBuilder.getMapItemContextDialog(mContext, mOnAddProConValueDialogListener, null);
 		}
 		else
 		{
@@ -223,8 +242,16 @@ public class MapItemActivityPresenter extends BasePresenter implements ActivityO
 		{
 			if(which == DialogInterface.BUTTON_POSITIVE)
 			{
-				EditTextDialog ed = (EditTextDialog)dialog;
-				onUpdateContextItem(ed);
+				if(dialog instanceof EditTextDialog)
+				{
+					EditTextDialog ed = (EditTextDialog)dialog;
+					onUpdateContextItem(ed);
+				}
+				else if(dialog instanceof MapItemDetailDialog)
+				{
+					MapItemDetailDialog mdd = (MapItemDetailDialog)dialog;
+					onUpdateContextItem(mdd);
+				}
 			}
 		}
 	};
@@ -277,10 +304,22 @@ public class MapItemActivityPresenter extends BasePresenter implements ActivityO
 	{
 		AdapterContextMenuInfo mi = (AdapterContextMenuInfo) item.getMenuInfo();
 		MapItemDetailItem midi = (MapItemDetailItem) mContextFragment.getListView().getItemAtPosition(mi.position);
-		int ico = (midi.getType() == DialogBuilder.OnAddMapItenContextButtonClickListener.PRO ? R.drawable.ico_plus : R.drawable.ico_minus); 
-		EditTextDialog etd = DialogBuilder.getMapItemContextDialog(mContext, ico , mOnAddProConValueDialogListener, midi.getValue());
-		etd.setTag(midi);
-		etd.show();
+		int type = midi.getType();
+		AlertDialog ad = null;
+		if(type != MapItemDetailItem.TYPE_DETAIL)
+		{
+			int ico = ( type == DialogBuilder.OnAddMapItenContextButtonClickListener.PRO ? R.drawable.ico_plus : R.drawable.ico_minus); 
+			EditTextDialog etd = DialogBuilder.getMapItemContextDialog(mContext, ico , mOnAddProConValueDialogListener, midi.getValue());
+			etd.setTag(midi);
+			ad = etd;
+		}
+		else
+		{
+			MapItemDetailDialog d = DialogBuilder.getMapItemContextDialog(mContext, mOnAddProConValueDialogListener, midi.getDetailValue());
+			d.setTag(midi);
+			ad = d;
+		}
+		ad.show();
 	}
 
 	@Override

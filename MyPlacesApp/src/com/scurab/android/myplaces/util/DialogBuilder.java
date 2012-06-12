@@ -2,8 +2,11 @@ package com.scurab.android.myplaces.util;
 
 import com.scurab.android.myplaces.M;
 import com.scurab.android.myplaces.R;
+import com.scurab.android.myplaces.datamodel.Detail;
+import com.scurab.android.myplaces.datamodel.MapItemDetailItem;
 import com.scurab.android.myplaces.datamodel.Star;
 import com.scurab.android.myplaces.widget.EditTextDialog;
+import com.scurab.android.myplaces.widget.MapItemDetailDialog;
 
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -77,6 +80,19 @@ public class DialogBuilder
 		EditTextDialog dtd = new EditTextDialog(context, headerIcon);
 		if(content != null)
 			dtd.setText(content);				
+		dtd.setButton(AlertDialog.BUTTON_POSITIVE, context.getString(R.string.lblOK), listener);
+		dtd.setButton(AlertDialog.BUTTON_NEUTRAL, context.getString(R.string.lblCancel), listener);
+		return dtd;
+	}
+	
+	public static MapItemDetailDialog getMapItemContextDialog(Context context, DialogInterface.OnClickListener listener, Detail content)
+	{
+		if(context == null)
+			throw new NullPointerException("Context is null!");
+		
+		MapItemDetailDialog dtd = new MapItemDetailDialog(context);
+		if(content != null)
+			dtd.setDetail(content);				
 		dtd.setButton(AlertDialog.BUTTON_POSITIVE, context.getString(R.string.lblOK), listener);
 		dtd.setButton(AlertDialog.BUTTON_NEUTRAL, context.getString(R.string.lblCancel), listener);
 		return dtd;

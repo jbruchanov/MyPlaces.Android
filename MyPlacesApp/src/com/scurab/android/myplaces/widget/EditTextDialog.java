@@ -12,13 +12,12 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-public class EditTextDialog extends AlertDialog
+public class EditTextDialog extends TagableDialog
 {
 	private Context mContext;
 	private EditText mText;
 	private int mHeaderIconRes;
 	private int mType;
-	private Object mTag;
 	
 	public EditTextDialog(Context context, int headerIconRes)
 	{
@@ -84,17 +83,4 @@ public class EditTextDialog extends AlertDialog
 	{
 		mType = type;
 	}
-
-
-
-	public Object getTag()
-	{
-		return mTag;
-	}
-
-	public void setTag(Object tag)
-	{
-		mTag = tag;
-	}
-
 }

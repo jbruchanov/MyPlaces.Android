@@ -46,4 +46,28 @@ public class Detail implements Serializable
 	{
 		this.detail = detail;
 	}
+	
+	public void setValues(Detail anotherOne)
+	{
+		what = anotherOne.what;
+		detail = anotherOne.detail;
+		time = anotherOne.time;
+	}
+	public boolean equalsByValues(Detail value)
+	{		
+		return compare(what, value.what) 
+				&& compare(detail, value.detail)
+				&& compare(time, value.time);
+	}
+	
+	private boolean compare(Object a, Object b)
+	{
+		if(a == b)
+			return true;
+		else if(a != null && b != null)
+		{
+				return a.equals(b);
+		}
+		return false;
+	}	
 }
