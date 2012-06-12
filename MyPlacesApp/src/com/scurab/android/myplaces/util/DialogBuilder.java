@@ -1,12 +1,17 @@
 package com.scurab.android.myplaces.util;
 
+import com.scurab.android.myplaces.M;
 import com.scurab.android.myplaces.R;
 import com.scurab.android.myplaces.datamodel.Star;
+import com.scurab.android.myplaces.widget.EditTextDialog;
+
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.EditText;
 
 public class DialogBuilder 
@@ -62,5 +67,18 @@ public class DialogBuilder
 		b.setOnClickListener(new View.OnClickListener(){@Override public void onClick(View v){ad.dismiss();listener.onClick(v, OnAddMapItenContextButtonClickListener.DETAIL);}});
 			
 		return ad;
+	}
+	
+	public static EditTextDialog getMapItemContextDialog(Context context, int headerIcon, DialogInterface.OnClickListener listener, String content)
+	{
+		if(context == null)
+			throw new NullPointerException("Context is null!");
+		
+		EditTextDialog dtd = new EditTextDialog(context, headerIcon);
+		if(content != null)
+			dtd.setText(content);				
+		dtd.setButton(AlertDialog.BUTTON_POSITIVE, context.getString(R.string.lblOK), listener);
+		dtd.setButton(AlertDialog.BUTTON_NEUTRAL, context.getString(R.string.lblCancel), listener);
+		return dtd;
 	}
 }

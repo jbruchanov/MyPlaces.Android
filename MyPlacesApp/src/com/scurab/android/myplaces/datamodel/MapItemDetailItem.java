@@ -37,4 +37,14 @@ public class MapItemDetailItem
 		return mDetailValue;
 	}
 	
+	public void setValue(String value)
+	{
+		mValue = value;
+	}
+	
+	public void setDetail(Detail d)
+	{
+		mDetailValue = d;
+	}
+	
 }

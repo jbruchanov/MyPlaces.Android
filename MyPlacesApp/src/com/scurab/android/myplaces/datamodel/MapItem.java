@@ -7,6 +7,12 @@ import java.util.List;
 import com.scurab.android.myplaces.R;
 import com.scurab.android.myplaces.util.AppUtils;
 
+/**
+ * <br/>
+ * Use {@link #addCon(String)} {@link #addPro(String)} resp. remove... to be sure to update adapter data to buble all changes to visual elements like listView
+ * @author Joe Scurab
+ *
+ */
 public class MapItem extends MapElement implements Serializable
 {
 	private long id;
@@ -237,5 +243,58 @@ public class MapItem extends MapElement implements Serializable
 			}
 		}
 		return mDataForAdapter;
+	}
+		
+	public void addPro(String s)
+	{
+		if(pros == null)
+			pros = new ArrayList<String>();
+		pros.add(s);
+		if(mDataForAdapter != null)
+			mDataForAdapter.add(new MapItemDetailItem(s, MapItemDetailItem.TYPE_PRO));
+	}
+	
+	
+	public void addCon(String s)
+	{
+		if(cons == null)
+			cons = new ArrayList<String>();
+		cons.add(s);
+		if(mDataForAdapter != null)
+			mDataForAdapter.add(new MapItemDetailItem(s, MapItemDetailItem.TYPE_CON));
+	}
+	
+	public void removePro(String s)
+	{
+		if(pros != null)			
+			pros.remove(s);
+		if(mDataForAdapter != null)
+		{
+			for(MapItemDetailItem mdi : mDataForAdapter)
+			{
+				if(mdi.getType() == MapItemDetailItem.TYPE_PRO && mdi.getValue().equals(s))
+				{
+					mDataForAdapter.remove(mdi);
+					break;
+				}
+			}
+		}
+	}
+	
+	public void removeCon(String s)
+	{
+		if(cons != null)			
+			cons.remove(s);
+		if(mDataForAdapter != null)
+		{
+			for(MapItemDetailItem mdi : mDataForAdapter)
+			{
+				if(mdi.getType() == MapItemDetailItem.TYPE_CON && mdi.getValue().equals(s))
+				{
+					mDataForAdapter.remove(mdi);
+					break;
+				}
+			}
+		}
 	}
 }

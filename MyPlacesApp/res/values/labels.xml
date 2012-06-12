@@ -26,4 +26,6 @@
     <string name="lblSave">Save</string>
     <string name="lblAdd">Add</string>
     <string name="lblDetail">Detail</string>
+    <string name="lblCancel">Cancel</string>
+    <string name="lblEdit">Edit</string>
 </resources>

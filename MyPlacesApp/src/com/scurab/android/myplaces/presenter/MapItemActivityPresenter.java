@@ -8,6 +8,7 @@ import com.scurab.android.myplaces.M;
 import com.scurab.android.myplaces.MyPlacesApplication;
 import com.scurab.android.myplaces.R;
 import com.scurab.android.myplaces.activity.MapItemActivity;
+import com.scurab.android.myplaces.adapter.DetailAdapter;
 import com.scurab.android.myplaces.datamodel.MapItem;
 import com.scurab.android.myplaces.datamodel.MapItemDetailItem;
 import com.scurab.android.myplaces.fragment.MapItemContextFragment;
@@ -17,8 +18,10 @@ import com.scurab.android.myplaces.interfaces.ActivityContextMenuListener;
 import com.scurab.android.myplaces.interfaces.ActivityOptionsMenuListener;
 import com.scurab.android.myplaces.overlay.EditPlaceOverlay;
 import com.scurab.android.myplaces.overlay.MyPlaceOverlay;
+import com.scurab.android.myplaces.overlay.MyPlaceOverlayItem;
 import com.scurab.android.myplaces.server.ServerConnection;
 import com.scurab.android.myplaces.util.DialogBuilder;
+import com.scurab.android.myplaces.widget.EditTextDialog;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -26,6 +29,7 @@ import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.app.ActionBar.Tab;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -35,6 +39,8 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.Toast;
 
 public class MapItemActivityPresenter extends BasePresenter implements ActivityOptionsMenuListener, ActivityContextMenuListener
@@ -155,15 +161,74 @@ public class MapItemActivityPresenter extends BasePresenter implements ActivityO
 		@Override
 		public void onClick(View v, int type)
 		{
-			onAddContextItem(type);
+			onAddingContextItem(type);
 		}
 	};
 	
-	public void onAddContextItem(int type)
+	public void onUpdateContextItem(EditTextDialog etd)
 	{
-		Toast.makeText(mContext, String.valueOf(type), Toast.LENGTH_SHORT).show();
+		int type = etd.getType();
+		String newValue = etd.getText();
+		
+		MapItemDetailItem midi = (MapItemDetailItem) etd.getTag();
+		if(midi != null)//edit
+		{
+			String oldValue = midi.getValue();
+			midi.setValue(newValue);
+			if(type == MapItemDetailItem.TYPE_PRO)
+			{
+				mDetailedItem.getPros().remove(oldValue);
+				mDetailedItem.getPros().add(newValue);				
+			}
+			else if(type == MapItemDetailItem.TYPE_CON)
+			{
+				mDetailedItem.getCons().remove(oldValue);
+				mDetailedItem.getCons().add(newValue);
+			}
+		}
+		else
+		{			
+			if(type == MapItemDetailItem.TYPE_PRO)
+			{
+				mDetailedItem.addPro(newValue);
+			}
+			else if(type == MapItemDetailItem.TYPE_CON)
+			{
+				mDetailedItem.addCon(newValue);
+			}
+		}
+		DetailAdapter mdi = (DetailAdapter) mContextFragment.getListView().getAdapter(); 
+		mdi.notifyDataSetChanged();
 	}
-
+	
+	public void onAddingContextItem(final int type)
+	{
+		AlertDialog ad = null;
+		if(type == DialogBuilder.OnAddMapItenContextButtonClickListener.DETAIL)
+		{
+			
+		}
+		else
+		{
+			int ico = (type == DialogBuilder.OnAddMapItenContextButtonClickListener.PRO ? R.drawable.ico_plus : R.drawable.ico_minus); 
+			ad = DialogBuilder.getMapItemContextDialog(mContext, ico , mOnAddProConValueDialogListener, null);
+		}
+		ad.show();
+	}
+	
+	private DialogInterface.OnClickListener mOnAddProConValueDialogListener = new DialogInterface.OnClickListener()
+	{
+		@Override
+		public void onClick(DialogInterface dialog, int which)
+		{
+			if(which == DialogInterface.BUTTON_POSITIVE)
+			{
+				EditTextDialog ed = (EditTextDialog)dialog;
+				onUpdateContextItem(ed);
+			}
+		}
+	};
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu)
 	{
@@ -187,6 +252,9 @@ public class MapItemActivityPresenter extends BasePresenter implements ActivityO
 			case R.id.muDelete:
 				onDeleteContextItem(item);
 				break;
+			case R.id.muEdit:
+				onEditingContextItem(item);
+				break;
 		}
 		return false;
 	}
@@ -195,14 +263,31 @@ public class MapItemActivityPresenter extends BasePresenter implements ActivityO
 	{
 		AdapterContextMenuInfo mi = (AdapterContextMenuInfo) item.getMenuInfo();
 		MapItemDetailItem midi = (MapItemDetailItem) mContextFragment.getListView().getItemAtPosition(mi.position);
-		Toast.makeText(mContext, "DELETE " + midi.getType() + " " + midi.getValue(), Toast.LENGTH_LONG).show();
+		int type = midi.getType();
+		if(type == MapItemDetailItem.TYPE_CON)
+			mDetailedItem.getCons().remove(midi.getValue());
+		else if(type == MapItemDetailItem.TYPE_PRO)
+			mDetailedItem.getPros().remove(midi.getValue());
+		
+		DetailAdapter mdi = (DetailAdapter) mContextFragment.getListView().getAdapter();
+		mdi.remove(midi);
+	}
+	
+	public void onEditingContextItem(MenuItem item)
+	{
+		AdapterContextMenuInfo mi = (AdapterContextMenuInfo) item.getMenuInfo();
+		MapItemDetailItem midi = (MapItemDetailItem) mContextFragment.getListView().getItemAtPosition(mi.position);
+		int ico = (midi.getType() == DialogBuilder.OnAddMapItenContextButtonClickListener.PRO ? R.drawable.ico_plus : R.drawable.ico_minus); 
+		EditTextDialog etd = DialogBuilder.getMapItemContextDialog(mContext, ico , mOnAddProConValueDialogListener, midi.getValue());
+		etd.setTag(midi);
+		etd.show();
 	}
 
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo)
 	{
 		MenuInflater inflater = mContext.getMenuInflater();
-		inflater.inflate(R.menu.menu_delete, menu);
+		inflater.inflate(R.menu.menu_editdelete, menu);
 	}
 	
 	public class TabListener<T extends Fragment> implements ActionBar.TabListener
