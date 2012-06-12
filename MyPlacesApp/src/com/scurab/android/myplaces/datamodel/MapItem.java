@@ -150,7 +150,7 @@ public class MapItem extends MapElement implements Serializable
 	{
 		String t = getType();
 		if(t == null)
-			return R.drawable.ico_beer;
+			return R.drawable.ico_pin;
 		else
 			t = t.toLowerCase();
 		

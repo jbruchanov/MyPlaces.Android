@@ -1,5 +1,6 @@
 package com.scurab.android.myplaces.fragment;
 
+import com.google.android.maps.MapView;
 import com.scurab.android.myplaces.R;
 
 import android.app.Fragment;

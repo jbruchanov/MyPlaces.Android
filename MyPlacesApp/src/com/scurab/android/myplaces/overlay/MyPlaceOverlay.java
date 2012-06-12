@@ -1,6 +1,7 @@
 package com.scurab.android.myplaces.overlay;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 
 import com.google.android.maps.ItemizedOverlay;
 import com.scurab.android.myplaces.datamodel.MapElement;
@@ -16,6 +17,15 @@ public class MyPlaceOverlay<T extends MapElement> extends ItemizedOverlay<MyPlac
 	private MyPlaceOverlayItem mOverlay;
 	private OnTapListener<T> mTapListener;
 	
+	protected MyPlaceOverlay(Drawable d, T s)
+	{
+		super(d);
+		mOverlay = new MyPlaceOverlayItem(s);		
+		mItem = s;
+		mOverlay.setMarker(boundCenter(d));
+		populate();
+	}
+	
 	public MyPlaceOverlay(Context c, T s)
 	{
 		super(c.getResources().getDrawable(s.getIconResId()));
@@ -24,7 +34,7 @@ public class MyPlaceOverlay<T extends MapElement> extends ItemizedOverlay<MyPlac
 		mOverlay.setMarker(boundCenter(c.getResources().getDrawable(s.getIconResId())));
 		populate();
 	}
-
+	
 	@Override
 	protected MyPlaceOverlayItem createItem(int arg0)
 	{		

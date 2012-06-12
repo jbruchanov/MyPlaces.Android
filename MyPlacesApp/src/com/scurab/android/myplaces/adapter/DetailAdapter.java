@@ -57,16 +57,16 @@ public class DetailAdapter extends ArrayAdapter<MapItemDetailItem>
 			dt.Title.setText(d.getWhat());			
 			dt.Detail.setText(d.getDetail());
 			dt.Detail.setVisibility(View.VISIBLE);
-			dt.Icon.setImageDrawable(mResources.getDrawable(R.drawable.ico_pencil));
+			dt.Icon.setImageDrawable(mResources.getDrawable(R.drawable.ico_pencil_smaller));
 		}
 		else
 		{
 			dt.Title.setText(o.getValue());
 			dt.Detail.setVisibility(View.GONE);
 			if(type == MapItemDetailItem.TYPE_PRO)
-				dt.Icon.setImageDrawable(mResources.getDrawable(R.drawable.ico_plus));
+				dt.Icon.setImageDrawable(mResources.getDrawable(R.drawable.ico_plus_smaller));
 			else if(type == MapItemDetailItem.TYPE_CON)
-				dt.Icon.setImageDrawable(mResources.getDrawable(R.drawable.ico_minus));
+				dt.Icon.setImageDrawable(mResources.getDrawable(R.drawable.ico_minus_smaller));
 		}
 		return convertView;
 	}

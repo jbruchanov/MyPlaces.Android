@@ -15,6 +15,7 @@ import com.scurab.android.myplaces.fragment.MapItemDetailFragment;
 import com.scurab.android.myplaces.fragment.MapItemMapViewFragment;
 import com.scurab.android.myplaces.interfaces.ActivityContextMenuListener;
 import com.scurab.android.myplaces.interfaces.ActivityOptionsMenuListener;
+import com.scurab.android.myplaces.overlay.EditPlaceOverlay;
 import com.scurab.android.myplaces.overlay.MyPlaceOverlay;
 import com.scurab.android.myplaces.server.ServerConnection;
 import com.scurab.android.myplaces.util.DialogBuilder;
@@ -46,7 +47,7 @@ public class MapItemActivityPresenter extends BasePresenter implements ActivityO
 	private MapItemDetailFragment mDetailFragment;
 	private MapItemContextFragment mContextFragment;
 	private MapView mMapView;
-	private MyPlaceOverlay<MapItem> mCurrentMapItem;
+	private EditPlaceOverlay<MapItem> mCurrentMapItem;
 	
 	public MapItemActivityPresenter(MapItemActivity context)
 	{
@@ -65,7 +66,7 @@ public class MapItemActivityPresenter extends BasePresenter implements ActivityO
 		else
 		{
 			mDetailedItem = new MapItem();
-			mCurrentMapItem = new MyPlaceOverlay<MapItem>(mContext, mDetailedItem);
+			mCurrentMapItem = new EditPlaceOverlay<MapItem>(mContext, mDetailedItem);
 		}
 		
 		bind();
@@ -98,7 +99,7 @@ public class MapItemActivityPresenter extends BasePresenter implements ActivityO
 	{
 		mDetailedItem.setX(loc.getLongitudeE6()/M.COORD_HELP_MAPPER);
 		mDetailedItem.setY(loc.getLatitudeE6()/M.COORD_HELP_MAPPER);		
-		mCurrentMapItem = new MyPlaceOverlay<MapItem>(mContext, mDetailedItem);
+		mCurrentMapItem = new EditPlaceOverlay<MapItem>(mContext, mDetailedItem);
 		setCurrentMapItemToMap(false);
 		mMapView.invalidate();
 	}
@@ -312,7 +313,7 @@ public class MapItemActivityPresenter extends BasePresenter implements ActivityO
 					mContextFragment.setMapItem(result);
 				
 				mContext.setTitle(mDetailedItem.getTitle());				
-				mCurrentMapItem = new MyPlaceOverlay<MapItem>(mContext, result);
+				mCurrentMapItem = new EditPlaceOverlay<MapItem>(mContext, result);
 				if(mMapView != null)
 				{
 					setCurrentMapItemToMap(true);

@@ -11,20 +11,20 @@
         android:layout_width="0dip"
         android:layout_weight="1"
         android:layout_height="fill_parent"
-        android:src="@drawable/ico_add" />
+        android:src="@drawable/ico_plus" />
 
     <ImageButton
         android:id="@+id/ibCon"
         android:layout_width="0dip"
         android:layout_weight="1"
         android:layout_height="fill_parent"
-        android:src="@drawable/ico_error" />
+        android:src="@drawable/ico_minus" />
 
     <ImageButton
         android:id="@+id/ibDetail"
         android:layout_width="0dip"
         android:layout_weight="1"
         android:layout_height="fill_parent"
-        android:src="@drawable/ico_edit" />
+        android:src="@drawable/ico_pencil" />
 
 </LinearLayout>
