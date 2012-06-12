@@ -86,10 +86,15 @@ public class MapItemActivityPresenter extends BasePresenter implements ActivityO
 			boolean result = false;
 			if(event.getAction() == MotionEvent.ACTION_UP)
 			{				
-	            Projection proj = mMapView.getProjection();
-	            GeoPoint loc = proj.fromPixels((int)event.getX(), (int)event.getY());
-				onMapClick(loc);
-				result = true;
+				long start = event.getDownTime();
+				long end = event.getEventTime();
+				if(end - start < 150) //click is shorter than 100ms
+				{
+		            Projection proj = mMapView.getProjection();
+		            GeoPoint loc = proj.fromPixels((int)event.getX(), (int)event.getY());
+					onMapClick(loc);				
+					result = true;
+				}
 			}
 			return result;
 		}
@@ -102,6 +107,7 @@ public class MapItemActivityPresenter extends BasePresenter implements ActivityO
 		mCurrentMapItem = new EditPlaceOverlay<MapItem>(mContext, mDetailedItem);
 		setCurrentMapItemToMap(false);
 		mMapView.invalidate();
+		mDetailFragment.setMapItem(mDetailedItem);
 	}
 	
 	public void selectTab(int indexTab)
