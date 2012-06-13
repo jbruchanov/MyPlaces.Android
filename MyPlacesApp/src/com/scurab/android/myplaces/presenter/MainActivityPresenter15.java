@@ -13,6 +13,7 @@ import android.location.Address;
 import android.location.Location;
 import android.os.Handler;
 import android.os.Message;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -35,6 +36,7 @@ import com.scurab.android.myplaces.activity.MapItemActivity;
 import com.scurab.android.myplaces.datamodel.MapItem;
 import com.scurab.android.myplaces.datamodel.MyPosition;
 import com.scurab.android.myplaces.datamodel.Star;
+import com.scurab.android.myplaces.interfaces.ActivityKeyListener;
 import com.scurab.android.myplaces.interfaces.ActivityLifecycleListener;
 import com.scurab.android.myplaces.interfaces.ActivityOnBackPressed;
 import com.scurab.android.myplaces.interfaces.ActivityOptionsMenuListener;
@@ -46,7 +48,7 @@ import com.scurab.android.myplaces.util.DialogBuilder;
 import com.scurab.android.myplaces.widget.MapItemPanel;
 import com.scurab.android.myplaces.widget.dialog.SmileyDialog;
 
-public class MainActivityPresenter15 extends BasePresenter implements ActivityOptionsMenuListener, ActivityLifecycleListener, ActivityOnBackPressed, ActivityResultListener
+public class MainActivityPresenter15 extends BasePresenter implements ActivityOptionsMenuListener, ActivityLifecycleListener, ActivityOnBackPressed, ActivityResultListener, ActivityKeyListener
 {
 	public static final int STATE_DEFAULT = 0;
 	public static final int STATE_ADDING_NEW_ITEM = 1;
@@ -62,6 +64,7 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
 	private MyPlaceOverlay<MyPosition> mMyLocationOverlay;
 	private List<MyPlaceOverlay<Star>> mStarOverlays;
 	private List<MyPlaceOverlay<MapItem>> mMapItemOverlays;
+	private SearchView mSearchView;
 	
 	private View.OnTouchListener mMapTouchListener = new View.OnTouchListener()
 	{
@@ -124,6 +127,7 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
 			}
 		});		
 		mContext.setActivityOnResultListener(this);
+		mContext.setActivityKeyListener(this);
 	}
 	
 	public void onMyLocationClick()
@@ -413,6 +417,7 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
 				},"UpdateStar").run();
 			}
 		});
+		ad.setButton(DialogInterface.BUTTON_NEUTRAL,mContext.getString(R.string.lblCancel), (DialogInterface.OnClickListener)null);
 		ad.show();
 	}
 	
@@ -562,19 +567,20 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
 	{
 		MenuInflater inflater = mContext.getMenuInflater();
 		inflater.inflate(R.menu.main_activity, menu);
-		final SearchView searchView = (SearchView) menu.findItem(R.id.muSearch).getActionView();
-		searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener()
+		mSearchView = (SearchView) menu.findItem(R.id.muSearch).getActionView();
+		mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener()
 		{
 			@Override
 			public boolean onQueryTextSubmit(String query)
 			{
-				onSearch(query);				
+				onSearch(query);		
 				return true;
 			}
 			
 			@Override
 			public boolean onQueryTextChange(String newText){return false;}
 		});
+		mSearchView.setSubmitButtonEnabled(true);
 		return true;
 	}
 
@@ -744,5 +750,24 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
 	protected void onAddedMapItem(MapItem newOne)
 	{
 		onLoadedMapItems(new MapItem[] {newOne});
+	}
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event)
+	{
+		if(keyCode == KeyEvent.KEYCODE_SEARCH)
+		{
+			if(mSearchView != null)
+			{
+			}
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean onKeyUp(int keyCode, KeyEvent event)
+	{
+		return false;
 	}
 }

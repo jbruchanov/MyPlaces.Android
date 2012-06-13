@@ -9,6 +9,7 @@ import com.scurab.android.myplaces.widget.MapItemPanel;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
@@ -21,7 +22,7 @@ public class MainActivity extends BaseMapActivity {
 	private ProgressBar mProgressBar;
 	private MainActivityPresenter15 mPresenter;
 	private MapItemPanel mMapItemPanel;
-	private ActivityResultListener mActivityResultListener;
+
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -91,16 +92,5 @@ public class MainActivity extends BaseMapActivity {
 		return mMapItemPanel;
 	}
 
-	public void setActivityOnResultListener(ActivityResultListener listener)
-	{
-		mActivityResultListener = listener;
-	}
 	
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data)
-	{
-		if(mActivityResultListener != null)
-			mActivityResultListener.onActivityResult(requestCode, resultCode, data);
-		super.onActivityResult(requestCode, resultCode, data);
-	}
 }

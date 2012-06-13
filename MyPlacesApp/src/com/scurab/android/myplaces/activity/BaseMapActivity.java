@@ -1,15 +1,19 @@
 package com.scurab.android.myplaces.activity;
 
+import android.content.Intent;
 import android.view.ContextMenu;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ContextMenu.ContextMenuInfo;
 import com.google.android.maps.MapActivity;
 import com.scurab.android.myplaces.interfaces.ActivityContextMenuListener;
+import com.scurab.android.myplaces.interfaces.ActivityKeyListener;
 import com.scurab.android.myplaces.interfaces.ActivityLifecycleListener;
 import com.scurab.android.myplaces.interfaces.ActivityOnBackPressed;
 import com.scurab.android.myplaces.interfaces.ActivityOptionsMenuListener;
+import com.scurab.android.myplaces.interfaces.ActivityResultListener;
 import com.scurab.android.myplaces.presenter.BasePresenter;
 
 public abstract class BaseMapActivity extends MapActivity
@@ -20,6 +24,8 @@ public abstract class BaseMapActivity extends MapActivity
 	private ActivityOptionsMenuListener mOptionsListener;
 	private ActivityLifecycleListener mActivityListener;
 	private ActivityOnBackPressed mOnBackPressedListener;
+	private ActivityResultListener mActivityResultListener;
+	private ActivityKeyListener mActivityKeyListener;
 	
 	public void setActivityContextMenuListener(ActivityContextMenuListener listener)
 	{
@@ -108,4 +114,42 @@ public abstract class BaseMapActivity extends MapActivity
 		mOnBackPressedListener = onBackPressedListener;
 	}
 	
+	public void setActivityOnResultListener(ActivityResultListener listener)
+	{
+		mActivityResultListener = listener;
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data)
+	{
+		if(mActivityResultListener != null)
+			mActivityResultListener.onActivityResult(requestCode, resultCode, data);
+		super.onActivityResult(requestCode, resultCode, data);
+	}
+	public void setActivityKeyListener(ActivityKeyListener activityKeyListener)
+	{
+		mActivityKeyListener = activityKeyListener;
+	}
+	
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event)
+	{
+		boolean b = false;
+		if(mActivityKeyListener != null)
+			b = mActivityKeyListener.onKeyDown(keyCode, event);
+		if(!b)
+			b = super.onKeyDown(keyCode, event);
+		return b;
+	}
+	
+	@Override
+	public boolean onKeyUp(int keyCode, KeyEvent event)
+	{
+		boolean b = false;
+		if(mActivityKeyListener != null)
+			b = mActivityKeyListener.onKeyUp(keyCode, event);
+		if(!b)
+			b = super.onKeyUp(keyCode, event);
+		return b;
+	}
 }
