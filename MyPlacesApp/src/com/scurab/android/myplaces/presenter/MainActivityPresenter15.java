@@ -433,7 +433,8 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
 	{
 		try
 		{
-			MapItem[] items = getServerConnection().getMapItems(14, 55, 16, 50);
+//			MapItem[] items = getServerConnection().getMapItems(14, 55, 16, 50);
+			MapItem[] items = getServerConnection().getMapItems(-180, 90, 180, -90);
 			onLoadedMapItems(items);
 		}
 		catch(Exception e)
