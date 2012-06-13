@@ -105,7 +105,10 @@ public class MapItemDetailFragment extends Fragment
 		mi.setRating((int)(mRatingBar.getRating() * 2));
 		mi.setX(Float.parseFloat(mX.getText().toString()));
 		mi.setY(Float.parseFloat(mY.getText().toString()));
-		mi.setType(mType.getSelectedItem().toString());
+		if(mType.getSelectedItem() != null)
+			mi.setType(mType.getSelectedItem().toString());
+		else
+			mi.setType("");
 	}
 
 	public EditText getNameEditText()

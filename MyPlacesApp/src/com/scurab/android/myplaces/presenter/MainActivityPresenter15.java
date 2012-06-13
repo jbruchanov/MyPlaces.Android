@@ -171,10 +171,15 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
 	
 	public void onMoreButtonClick(MapItem item)
 	{
+		showMapItemActivity(item);
+	}
+	
+	protected void showMapItemActivity(MapItem item)
+	{
 		Intent i = new Intent(mContext,MapItemActivity.class);
 		i.putExtra(M.Constants.MAP_ITEM, item);
 //		i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-		mContext.startActivityForResult(i, M.Constants.REQUEST_EDIT_MAP_ITEM);
+		mContext.startActivityForResult(i, M.Constants.REQUEST_EDIT_MAP_ITEM);		
 	}
 	
 	protected PresenterHandler createHandler(Context c)
@@ -253,6 +258,13 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
 			if(state == STATE_ADDING_NEW_STAR)
 			{
 				showSmileyDialog(location);
+			}
+			else if(state == STATE_ADDING_NEW_ITEM)
+			{
+				MapItem mi = new MapItem();
+				mi.setX(location.getLongitudeE6()/M.COORD_HELP_MAPPER);
+				mi.setY(location.getLatitudeE6()/M.COORD_HELP_MAPPER);
+				showMapItemActivity(mi);
 			}
 			setState(STATE_DEFAULT);
 		}

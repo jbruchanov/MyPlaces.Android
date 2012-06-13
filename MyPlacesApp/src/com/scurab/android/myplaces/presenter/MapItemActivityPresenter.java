@@ -70,17 +70,8 @@ public class MapItemActivityPresenter extends BasePresenter implements ActivityO
 	
 	private void init()
 	{
-		if(mContext.getIntent().hasExtra(M.Constants.MAP_ITEM))
-		{
-			mDetailedItem = (MapItem) mContext.getIntent().getExtras().get(M.Constants.MAP_ITEM);
-			new LoadTask().execute(mDetailedItem.getId());
-		}
-		else
-		{
-			mDetailedItem = new MapItem();
-			mCurrentMapItem = new EditPlaceOverlay<MapItem>(mContext, mDetailedItem);
-		}
-		
+		mDetailedItem = (MapItem) mContext.getIntent().getExtras().get(M.Constants.MAP_ITEM);
+		new LoadTask().execute(mDetailedItem.getId());
 		bind();
 	}
 	
@@ -527,7 +518,7 @@ public class MapItemActivityPresenter extends BasePresenter implements ActivityO
 				tag = 2;
 				mMapView = ((MapItemMapViewFragment) mFragment).getMapView(mContext);
 				mMapView.setOnTouchListener(mMapTouchListener);
-				setCurrentMapItemToMap(true);
+				setCurrentMapItemToMap(true);				
 			}
 			else if("3".equals(mTag))
 			{
@@ -577,7 +568,10 @@ public class MapItemActivityPresenter extends BasePresenter implements ActivityO
 					ServerConnection sc = mpa.getServerConnection();
 					if(mMapItemTypes == null)
 						mMapItemTypes = sc.getMapItemTypes();
-					detailed = sc.getDetailedMapItem(id);
+					if(id > 0)
+						detailed = sc.getDetailedMapItem(id);
+					else
+						detailed = mDetailedItem;
 				}
 				catch(Exception e)
 				{
