@@ -4,8 +4,11 @@ import com.scurab.android.myplaces.R;
 import com.scurab.android.myplaces.datamodel.MapItem;
 import com.scurab.android.myplaces.util.IntentHelper;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.Animation;
@@ -14,6 +17,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
  
 public class MapItemPanel extends LinearLayout implements View.OnClickListener
 {
@@ -38,6 +42,7 @@ public class MapItemPanel extends LinearLayout implements View.OnClickListener
 	private ImageButton mCallImageButton;
 	private ImageButton mMoreImageButton;
 	private ImageView mIconImageView;
+	private ImageButton mStreetViewButton;
 	private OnMoreButtonClickListener mOnMoreButtonClickListener;
 	
 	public MapItemPanel(Context context, AttributeSet attrs, int defStyle)
@@ -75,7 +80,7 @@ public class MapItemPanel extends LinearLayout implements View.OnClickListener
 		mShareImageButton = (ImageButton) mContentView.findViewById(R.id.ibShare);
 		mCallImageButton = (ImageButton) mContentView.findViewById(R.id.ibPhone);
 		mMoreImageButton = (ImageButton) mContentView.findViewById(R.id.ibMore);
-		
+		mStreetViewButton = (ImageButton) mContentView.findViewById(R.id.ibStreetView);
 		mCloseView = (ImageView) findViewById(R.id.ivClose);
 		mAnimationUp = AnimationUtils.loadAnimation(mContext, R.anim.scroll_down_def);		
 		mAnimationDown = AnimationUtils.loadAnimation(mContext, R.anim.scroll_up_def);
@@ -91,7 +96,7 @@ public class MapItemPanel extends LinearLayout implements View.OnClickListener
 		mShareImageButton.setOnClickListener(this);
 		mCallImageButton.setOnClickListener(this);
 		mMoreImageButton.setOnClickListener(this);
-		
+		mStreetViewButton.setOnClickListener(this);
 		
 		mAnimationUp.setAnimationListener(new Animation.AnimationListener()
 		{
@@ -151,6 +156,19 @@ public class MapItemPanel extends LinearLayout implements View.OnClickListener
 			if(mOnMoreButtonClickListener != null)
 				mOnMoreButtonClickListener.onClick(v, getMapItem());
 		}
+		else if(v == mStreetViewButton)
+		{
+//             Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("google.streetview:cbll=" + lat +"," + lon + "&cbp=1,180,,0,1.0"));
+             Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(mMapItem.getStreetViewUriLink()));
+             try
+             {
+            	 mContext.startActivity(i);
+             }
+             catch(ActivityNotFoundException e)
+             {
+            	 Toast.makeText(mContext, R.string.errInstallStreetViewFirst, Toast.LENGTH_LONG).show();
+             }
+		}
 	}
 
 	public boolean isAnimations()
@@ -177,6 +195,9 @@ public class MapItemPanel extends LinearLayout implements View.OnClickListener
 		mContactImageButton.setEnabled(contact != null && contact.trim().length() > 0);
 		
 		mIconImageView.setImageDrawable(getResources().getDrawable(item.getIconResId()));
+		
+		boolean showStreetView = mMapItem.getStreetViewLink() != null && mMapItem.getStreetViewLink().length() > 0;
+		mStreetViewButton.setVisibility(showStreetView ? View.VISIBLE : View.GONE);
 	}
 
 	public TextView getNameTextView()
@@ -203,4 +224,5 @@ public class MapItemPanel extends LinearLayout implements View.OnClickListener
 	{
 		mOnMoreButtonClickListener = onMoreButtonClickListener;
 	}
+	
 }

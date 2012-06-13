@@ -37,7 +37,7 @@ public class MapItemActivity extends BaseMapActivity
 				.setTabListener(mPresenter.new TabListener<MapItemDetailFragment>(this, "1", MapItemDetailFragment.class));
 		actionBar.addTab(tab);
 
-		tab = actionBar.newTab().setText(R.string.lblStreetView)
+		tab = actionBar.newTab().setText(R.string.lblMap)
 				.setTabListener(mPresenter.new TabListener<MapItemMapViewFragment>(this, "2", MapItemMapViewFragment.class));
 		actionBar.addTab(tab);
 

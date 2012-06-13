@@ -2,6 +2,7 @@ package com.scurab.android.myplaces.datamodel;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import com.scurab.android.myplaces.R;
@@ -322,5 +323,48 @@ public class MapItem extends MapElement implements Serializable
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Returns uri value for StreetView intent<br/>
+	 * if StreetViewLink is null returns null
+	 * @return
+	 */
+	public String getStreetViewUriLink()
+	{
+		if(streetViewLink == null)
+			return null;
+		HashMap<String,Double> data = getStreetViewValues();
+		return String.format("google.streetview:cbll=%s,%s&cbp=1,%s,,%s,%s",data.get(Y),data.get(X), data.get(YAW), data.get(PITCH), data.get(ZOOM));
+	}
+	
+	private static final String X = "X";
+	private static final String Y = "Y";
+	private static final String YAW = "YAW";
+	private static final String PITCH = "PITCH";
+	private static final String ZOOM = "ZOOM";
+	private static final String VALUE_SEPARATOR = ";";
+	
+	private HashMap<String,Double> getStreetViewValues()
+	{
+		//		X=14.431627;Y=50.077044;YAW=308.41;PITCH=-5.73;ZOOM=1
+		HashMap<String,Double> result = new HashMap<String,Double>();
+		String[] data = streetViewLink.split("\\" + VALUE_SEPARATOR);
+		
+		for(String item : data)
+		{
+			try
+			{
+				String[] values = item.split("=");
+				String key = values[0];
+				double value = Double.parseDouble(values[1]);
+				result.put(key, value);
+			}
+			catch(Exception e)
+			{
+				//should not never be thrown
+			}
+		}
+		return result;
 	}
 }

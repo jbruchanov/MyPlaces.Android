@@ -74,6 +74,13 @@
         android:orientation="horizontal" >
 
         <ImageButton
+            android:id="@+id/ibStreetView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@android:drawable/ic_menu_view" />
+        
+        <ImageButton
             android:id="@+id/ibWeb"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

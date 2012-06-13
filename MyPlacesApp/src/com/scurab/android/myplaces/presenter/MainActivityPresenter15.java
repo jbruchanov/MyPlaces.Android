@@ -2,6 +2,8 @@ package com.scurab.android.myplaces.presenter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
+
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -164,8 +166,8 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
 	{
 		mMapView = mContext.getMapView();
 		mHandler = createHandler(mContext);
-		mStarOverlays = new ArrayList<MyPlaceOverlay<Star>>();
-		mMapItemOverlays = new ArrayList<MyPlaceOverlay<MapItem>>();
+		mStarOverlays = new Vector<MyPlaceOverlay<Star>>();
+		mMapItemOverlays = new Vector<MyPlaceOverlay<MapItem>>();
 		loadData();
 	}
 	
