@@ -1,4 +1,4 @@
-package com.scurab.android.myplaces.widget;
+package com.scurab.android.myplaces.widget.dialog;
 
 import android.app.AlertDialog;
 import android.content.Context;

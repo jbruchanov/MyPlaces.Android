@@ -1,4 +1,4 @@
-package com.scurab.android.myplaces.widget;
+package com.scurab.android.myplaces.widget.dialog;
 
 import com.google.android.maps.GeoPoint;
 import com.scurab.android.myplaces.R;

@@ -28,4 +28,6 @@
     <string name="lblDetail">Detail</string>
     <string name="lblCancel">Cancel</string>
     <string name="lblEdit">Edit</string>
+    <string name="lblDone">Done</string>
+    <string name="lblFindAddress">Find address</string>
 </resources>

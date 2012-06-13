@@ -92,6 +92,21 @@ public class MapItemDetailFragment extends Fragment
 			}
 		}
 	}
+	
+	public void fillMapItem(MapItem mi)
+	{
+		mi.setName(mName.getText().toString());
+		mi.setStreet(mStreet.getText().toString());
+		mi.setCity(mCity.getText().toString());
+		mi.setCountry(mCountry.getText().toString());
+		mi.setContact(mContact.getText().toString());
+		mi.setWeb(mWeblink.getText().toString());
+		mi.setAuthor(mAuthor.getText().toString());
+		mi.setRating((int)(mRatingBar.getRating() * 2));
+		mi.setX(Float.parseFloat(mX.getText().toString()));
+		mi.setY(Float.parseFloat(mY.getText().toString()));
+		mi.setType(mType.getSelectedItem().toString());
+	}
 
 	public EditText getNameEditText()
 	{

@@ -1,20 +1,22 @@
 package com.scurab.android.myplaces.util;
 
-import com.scurab.android.myplaces.M;
+import java.util.List;
+
 import com.scurab.android.myplaces.R;
+import com.scurab.android.myplaces.activity.MapItemActivity;
 import com.scurab.android.myplaces.datamodel.Detail;
-import com.scurab.android.myplaces.datamodel.MapItemDetailItem;
 import com.scurab.android.myplaces.datamodel.Star;
-import com.scurab.android.myplaces.widget.EditTextDialog;
-import com.scurab.android.myplaces.widget.MapItemDetailDialog;
+import com.scurab.android.myplaces.widget.dialog.EditTextDialog;
+import com.scurab.android.myplaces.widget.dialog.ListDialog;
+import com.scurab.android.myplaces.widget.dialog.MapItemDetailDialog;
 
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.location.Address;
 import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.EditText;
 
 public class DialogBuilder 
@@ -80,8 +82,8 @@ public class DialogBuilder
 		EditTextDialog dtd = new EditTextDialog(context, headerIcon);
 		if(content != null)
 			dtd.setText(content);				
-		dtd.setButton(AlertDialog.BUTTON_POSITIVE, context.getString(R.string.lblOK), listener);
-		dtd.setButton(AlertDialog.BUTTON_NEUTRAL, context.getString(R.string.lblCancel), listener);
+		dtd.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(R.string.lblOK), listener);
+		dtd.setButton(DialogInterface.BUTTON_NEUTRAL, context.getString(R.string.lblCancel), listener);
 		return dtd;
 	}
 	
@@ -93,8 +95,38 @@ public class DialogBuilder
 		MapItemDetailDialog dtd = new MapItemDetailDialog(context);
 		if(content != null)
 			dtd.setDetail(content);				
-		dtd.setButton(AlertDialog.BUTTON_POSITIVE, context.getString(R.string.lblOK), listener);
-		dtd.setButton(AlertDialog.BUTTON_NEUTRAL, context.getString(R.string.lblCancel), listener);
+		dtd.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(R.string.lblOK), listener);
+		dtd.setButton(DialogInterface.BUTTON_NEUTRAL, context.getString(R.string.lblCancel), listener);
 		return dtd;
+	}
+	
+	public static AlertDialog getSimpleQuestionDialog(Context context, String title, String question, DialogInterface.OnClickListener okListener)
+	{
+		AlertDialog.Builder builder = new AlertDialog.Builder(context);
+		builder.setTitle(title);
+		builder.setMessage(question);
+		builder.setPositiveButton(context.getString(R.string.lblOK), okListener);
+		builder.setNegativeButton(context.getString(R.string.lblCancel), null);
+		AlertDialog a = builder.create();
+		return a;
+	}
+	
+	public static AlertDialog getSimpleRUSureDialog(Context context, DialogInterface.OnClickListener okListener)
+	{
+		AlertDialog.Builder builder = new AlertDialog.Builder(context);
+		builder.setMessage(context.getString(R.string.txtRUSure));
+		builder.setPositiveButton(context.getString(R.string.lblOK), okListener);
+		builder.setNegativeButton(context.getString(R.string.lblCancel), null);
+		AlertDialog a = builder.create();
+		return a;
+	}
+
+	public static ListDialog<Address> getAddressDialog(MapItemActivity context, List<Address> data, ListDialog.OnItemSelectListener<Address> listener)
+	{
+		ListDialog.AddressAdapter adapter = new ListDialog.AddressAdapter(context, data);
+		ListDialog<Address> ld = new ListDialog<Address>(context, data, adapter);
+		ld.setOnItemClickListener(listener);
+		ld.setButton(DialogInterface.BUTTON_NEGATIVE,context.getString(R.string.lblCancel), (DialogInterface.OnClickListener)null);
+		return ld;
 	}
 }

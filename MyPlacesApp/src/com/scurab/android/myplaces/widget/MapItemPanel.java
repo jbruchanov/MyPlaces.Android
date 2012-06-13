@@ -1,13 +1,10 @@
 package com.scurab.android.myplaces.widget;
 
-import com.scurab.android.myplaces.M;
 import com.scurab.android.myplaces.R;
-import com.scurab.android.myplaces.activity.MapItemActivity;
 import com.scurab.android.myplaces.datamodel.MapItem;
 import com.scurab.android.myplaces.util.IntentHelper;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.View;
@@ -20,6 +17,10 @@ import android.widget.TextView;
  
 public class MapItemPanel extends LinearLayout implements View.OnClickListener
 {
+	public interface OnMoreButtonClickListener
+	{
+		public void onClick(View source, MapItem item);
+	}
 	private View mContentView; 
 	private Context mContext;
 	private ImageView mCloseView;
@@ -37,6 +38,7 @@ public class MapItemPanel extends LinearLayout implements View.OnClickListener
 	private ImageButton mCallImageButton;
 	private ImageButton mMoreImageButton;
 	private ImageView mIconImageView;
+	private OnMoreButtonClickListener mOnMoreButtonClickListener;
 	
 	public MapItemPanel(Context context, AttributeSet attrs, int defStyle)
 	{
@@ -146,10 +148,8 @@ public class MapItemPanel extends LinearLayout implements View.OnClickListener
 			IntentHelper.sendText(mContext, getMapItem().toString());		
 		else if(v == mMoreImageButton)
 		{
-			Intent i = new Intent(mContext,MapItemActivity.class);
-			i.putExtra(M.Constants.MAP_ITEM, getMapItem());
-			i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-			mContext.startActivity(i);
+			if(mOnMoreButtonClickListener != null)
+				mOnMoreButtonClickListener.onClick(v, getMapItem());
 		}
 	}
 
@@ -197,5 +197,10 @@ public class MapItemPanel extends LinearLayout implements View.OnClickListener
 	public MapItem getMapItem()
 	{
 		return mMapItem;
+	}
+
+	public void setOnMoreButtonClickListener(OnMoreButtonClickListener onMoreButtonClickListener)
+	{
+		mOnMoreButtonClickListener = onMoreButtonClickListener;
 	}
 }

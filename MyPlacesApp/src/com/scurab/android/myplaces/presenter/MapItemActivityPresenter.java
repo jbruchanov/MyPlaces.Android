@@ -1,5 +1,8 @@
 package com.scurab.android.myplaces.presenter;
 
+import java.security.InvalidParameterException;
+import java.util.List;
+
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
@@ -18,21 +21,25 @@ import com.scurab.android.myplaces.fragment.MapItemMapViewFragment;
 import com.scurab.android.myplaces.interfaces.ActivityContextMenuListener;
 import com.scurab.android.myplaces.interfaces.ActivityOptionsMenuListener;
 import com.scurab.android.myplaces.overlay.EditPlaceOverlay;
-import com.scurab.android.myplaces.overlay.MyPlaceOverlay;
-import com.scurab.android.myplaces.overlay.MyPlaceOverlayItem;
 import com.scurab.android.myplaces.server.ServerConnection;
+import com.scurab.android.myplaces.util.AppUtils;
 import com.scurab.android.myplaces.util.DialogBuilder;
-import com.scurab.android.myplaces.widget.EditTextDialog;
-import com.scurab.android.myplaces.widget.MapItemDetailDialog;
+import com.scurab.android.myplaces.widget.dialog.EditTextDialog;
+import com.scurab.android.myplaces.widget.dialog.ListDialog;
+import com.scurab.android.myplaces.widget.dialog.MapItemDetailDialog;
 
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.app.ProgressDialog;
 import android.app.ActionBar.Tab;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.location.Address;
 import android.os.AsyncTask;
+import android.os.Looper;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
@@ -41,9 +48,6 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.Toast;
 
 public class MapItemActivityPresenter extends BasePresenter implements ActivityOptionsMenuListener, ActivityContextMenuListener
 {
@@ -138,18 +142,171 @@ public class MapItemActivityPresenter extends BasePresenter implements ActivityO
 			case R.id.muDelete:
 				onDeleteMapItem();
 				break;
+			case R.id.muSearch:
+				onSearchAddressByCoords();
+				break;
 		}
 		return false;
 	}
 	
+	public void onSearchAddressByCoords()
+	{
+		try
+		{
+			final ProgressDialog pd = ProgressDialog.show(mContext, null, mContext.getString(R.string.txtPleaseWait3Dot),false,false);
+			Thread t = new Thread(new Runnable()
+			{
+				@Override
+				public void run()
+				{
+					try
+					{
+						Looper.prepare();
+						MyPlacesApplication mpa = (MyPlacesApplication) mContext.getApplication();
+						final List<Address> result = mpa.getLocation(mDetailedItem.getX(),mDetailedItem.getY());
+						if(result.size() == 0)
+							showMessage(R.string.txtNothingFound);
+						else
+						{
+							mContext.runOnUiThread(new Runnable(){@Override public void run(){onShowSearchResultDialog(result);}});
+						}						
+					}
+					catch(Exception e)
+					{
+						showMessage(e);
+					}
+					pd.dismiss();
+				}
+			},"onSearchAddressByCoords");
+			t.start();
+		}
+		catch(Exception e)
+		{
+			showMessage(e);
+		}
+	}
+	
+	protected void onShowSearchResultDialog(List<Address> result)
+	{
+		AlertDialog ad = DialogBuilder.getAddressDialog(mContext,result, new ListDialog.OnItemSelectListener<Address>()
+		{
+			@Override
+			public void onItemClick(Address t)
+			{
+				onSelectedAddress(t);
+			}
+		});
+		ad.show();
+	}
+	
+	public void onSelectedAddress(Address a)
+	{
+		String street = AppUtils.emptyIfNull(a.getThoroughfare());
+		mDetailFragment.getStreetEditText().setText(street);
+//		mDetailedItem.setStreet(street);
+		
+		String city = AppUtils.emptyIfNull(a.getAdminArea());
+		mDetailFragment.getCityEditText().setText(city);
+//		mDetailedItem.setCity(city);
+		
+		String country = AppUtils.emptyIfNull(a.getCountryName());
+		mDetailFragment.getCountryEditText().setText(country);
+//		mDetailedItem.setCountry(country);
+	}
+
 	public void onSaveMapItem()
 	{
-		Toast.makeText(mContext, "onSaveMapItem", Toast.LENGTH_SHORT).show();
+		try
+		{
+			final MapItem newOne = getAndCheckMapItem(); 
+			final ProgressDialog pd = ProgressDialog.show(mContext, null, mContext.getString(R.string.txtPleaseWait3Dot),false,false);
+			Thread t = new Thread(new Runnable()
+			{
+				@Override
+				public void run()
+				{
+					try
+					{
+						MyPlacesApplication mpa = (MyPlacesApplication) mContext.getApplication();
+						ServerConnection sc = mpa.getServerConnection();						
+						MapItem saved = sc.save(newOne);
+						if(saved == null) saved = newOne;
+						Intent i = mContext.getIntent();						
+						i.putExtra(M.Constants.NEW_MAP_ITEM, saved);
+						int resultCode = newOne.getId() == 0 ? M.Constants.RESULT_ADD : M.Constants.RESULT_UPDATE;
+						mContext.setResult(resultCode, i);
+						mContext.finish();
+						showMessage(R.string.lblDone);
+					}
+					catch(Exception e)
+					{
+						showMessage(e);
+					}
+					pd.dismiss();
+				}
+			},"onSaveMapItem");
+			t.start();
+		}
+		catch(Exception e)
+		{
+			showMessage(e);
+		}
+	}
+	
+	private MapItem getAndCheckMapItem() throws InvalidParameterException
+	{
+		mDetailFragment.fillMapItem(mDetailedItem);
+		if(AppUtils.isNullOrEmpty(mDetailedItem.getName()))
+			throw new InvalidParameterException(mContext.getString(R.string.errMissingName));
+		if(AppUtils.isNullOrEmpty(mDetailedItem.getStreet()))
+			throw new InvalidParameterException(mContext.getString(R.string.errMissingStreet));
+		if(AppUtils.isNullOrEmpty(mDetailedItem.getType()))
+			throw new InvalidParameterException(mContext.getString(R.string.errMissingType));
+		
+		return mDetailedItem;
 	}
 	
 	public void onDeleteMapItem()
 	{
-		Toast.makeText(mContext, "onDeleteMapItem", Toast.LENGTH_SHORT).show();
+		AlertDialog ad = DialogBuilder.getSimpleRUSureDialog(mContext, new DialogInterface.OnClickListener()
+		{
+			@Override
+			public void onClick(DialogInterface dialog, int which)
+			{
+				if(which == DialogInterface.BUTTON_POSITIVE)
+				{
+					onDeleteMapItemImpl();	
+				}
+			}
+		});
+		ad.show();
+	}
+	
+	protected void onDeleteMapItemImpl()
+	{
+		final ProgressDialog pd = ProgressDialog.show(mContext, null, mContext.getString(R.string.txtPleaseWait3Dot),false,false);
+		Thread t = new Thread(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				try
+				{
+					MyPlacesApplication mpa = (MyPlacesApplication) mContext.getApplication();
+					ServerConnection sc = mpa.getServerConnection();
+					sc.delete(mCurrentMapItem.getObject());
+					mContext.setResult(M.Constants.RESULT_DELETE, mContext.getIntent());
+					mContext.finish();
+					showMessage(R.string.lblDone);
+				}
+				catch(Exception e)
+				{
+					showMessage(e);
+				}
+				mContext.runOnUiThread(new Runnable(){@Override public void run(){pd.dismiss();}});
+			}
+		},"onDeleteMapItem");
+		t.start();
 	}
 	
 	public void onShowAddContextItemChooser()
@@ -359,20 +516,22 @@ public class MapItemActivityPresenter extends BasePresenter implements ActivityO
 			}
 			mCurrentFragment = mFragment;
 			
-			boolean t3 = false;
+			int tag = 0;
 			if("1".equals(mTag))
 			{
+				tag = 1;
 				mDetailFragment = (MapItemDetailFragment) mFragment;
 			}
 			else if("2".equals(mTag))
-			{				
+			{			
+				tag = 2;
 				mMapView = ((MapItemMapViewFragment) mFragment).getMapView(mContext);
 				mMapView.setOnTouchListener(mMapTouchListener);
 				setCurrentMapItemToMap(true);
 			}
 			else if("3".equals(mTag))
 			{
-				t3 = true;
+				tag = 3;
 				mContextFragment = (MapItemContextFragment) mFragment;
 				if(callSetContext && mDetailedItem != null)
 					mContextFragment.setMapItem(mDetailedItem);
@@ -380,9 +539,10 @@ public class MapItemActivityPresenter extends BasePresenter implements ActivityO
 			
 			if(mMenu != null)
 			{
-				mMenu.findItem(R.id.muAdd).setVisible(t3);
-				mMenu.findItem(R.id.muDelete).setVisible(!t3);
-				mMenu.findItem(R.id.muSave).setVisible(!t3);
+				mMenu.findItem(R.id.muAdd).setVisible(tag == 3);
+				mMenu.findItem(R.id.muSearch).setVisible(tag == 1);
+//				mMenu.findItem(R.id.muDelete).setVisible(true);
+//				mMenu.findItem(R.id.muSave).setVisible(true);
 			}
 		}
 

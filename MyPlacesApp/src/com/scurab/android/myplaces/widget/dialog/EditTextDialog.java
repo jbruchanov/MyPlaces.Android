@@ -1,10 +1,9 @@
-package com.scurab.android.myplaces.widget;
+package com.scurab.android.myplaces.widget.dialog;
 
 import com.scurab.android.myplaces.M;
 import com.scurab.android.myplaces.R;
 import com.scurab.android.myplaces.util.DialogBuilder;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.view.Gravity;
 import android.view.ViewGroup.LayoutParams;

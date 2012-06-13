@@ -2,10 +2,12 @@ package com.scurab.android.myplaces.activity;
 
 import com.google.android.maps.MapView;
 import com.scurab.android.myplaces.R;
+import com.scurab.android.myplaces.interfaces.ActivityResultListener;
 import com.scurab.android.myplaces.presenter.BasePresenter;
 import com.scurab.android.myplaces.presenter.MainActivityPresenter15;
 import com.scurab.android.myplaces.widget.MapItemPanel;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
@@ -19,6 +21,8 @@ public class MainActivity extends BaseMapActivity {
 	private ProgressBar mProgressBar;
 	private MainActivityPresenter15 mPresenter;
 	private MapItemPanel mMapItemPanel;
+	private ActivityResultListener mActivityResultListener;
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,5 +89,18 @@ public class MainActivity extends BaseMapActivity {
 	public MapItemPanel getMapItemPanel()
 	{
 		return mMapItemPanel;
+	}
+
+	public void setActivityOnResultListener(ActivityResultListener listener)
+	{
+		mActivityResultListener = listener;
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data)
+	{
+		if(mActivityResultListener != null)
+			mActivityResultListener.onActivityResult(requestCode, resultCode, data);
+		super.onActivityResult(requestCode, resultCode, data);
 	}
 }

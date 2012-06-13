@@ -3,5 +3,12 @@
     <string name="hello">Hello World, MainActivity!</string>
     <string name="app_name">MyPlacesApp</string>
     <string name="txtClickToMapToSelectPosition">Click to map to select position</string>
+    <string name="txtPleaseWait3Dot">Please wait ...</string>
     <string name="MAP_KEY_DEBUG">0zaMruQCEG45rNlv_yDsCSm3SKJ2BTnMOeP-H3w</string>
+    <string name="errMissingName">Missing name!</string>
+    <string name="errMissingStreet">Missing street!</string>
+    <string name="errMissingType">Missing type!</string>
+    <string name="errEnableGeolocation">Enable geolocation in system settings first!</string>
+    <string name="txtRUSure">Are you sure ?</string>
+    <string name="txtNothingFound">Nothing found!</string>
 </resources>

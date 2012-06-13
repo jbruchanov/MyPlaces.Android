@@ -27,12 +27,14 @@ public class ServerConnection
 	private final String mStarsUrl;
 	private final String mMapItemTypesUrl;
 	private final String mMapItemTemplateUrl;
+	private final String mMapItemsUrl;
 	private final String mMapItemsTemplateUrl;
 	
-	private final String STARS_SUFFIX = "/stars";
+	private final String STARS_SUFFIX = "/stars";	
 	private final String STARS_DELETE_SUFFIX = "/stars/%s";
 	private final String MAPITEM_SUFFIX = "/mapitems/%s";
-	private final String MAPITEMS_SUFFIX = "/mapitems/%s/%s/%s/%s";
+	private final String MAPITEMS_SUFFIX = "/mapitems";
+	private final String MAPITEMS_COORDS_SUFFIX = "/mapitems/%s/%s/%s/%s";
 	private final String MAPITEM_TYPES_SUFFIX = "/mapitemtypes";
 	
 	/**
@@ -47,7 +49,8 @@ public class ServerConnection
 		mServerUrl = serverAddress;
 		mStarsUrl = mServerUrl + STARS_SUFFIX;
 		mMapItemTemplateUrl = mServerUrl + MAPITEM_SUFFIX;
-		mMapItemsTemplateUrl = mServerUrl + MAPITEMS_SUFFIX;
+		mMapItemsTemplateUrl = mServerUrl + MAPITEMS_COORDS_SUFFIX;
+		mMapItemsUrl = mServerUrl + MAPITEMS_SUFFIX;
 		mMapItemTypesUrl = mServerUrl + MAPITEM_TYPES_SUFFIX;
 	}
 	
@@ -146,5 +149,28 @@ public class ServerConnection
 		resource.delete();
 		Response r = resource.getResponse();
 		assert(r.getStatus().isSuccess());
+	}
+
+	public void delete(MapItem item)
+	{
+		String url = mServerUrl + String.format(MAPITEM_SUFFIX,item.getId());
+		ClientResource resource = getClientResource(url);
+		resource.delete();
+		Response r = resource.getResponse();
+		assert(r.getStatus().isSuccess());
+	}
+
+	public MapItem save(MapItem object)
+	{
+		ClientResource resource = getClientResource(mMapItemsUrl);
+		String value = sGson.toJson(object);
+		if(object.getId() == 0)
+			resource.post(value, MediaType.APPLICATION_JSON);
+		else
+			resource.put(value, MediaType.APPLICATION_JSON);
+		Response r = resource.getResponse();
+		MapItem saved = sGson.fromJson(r.getEntityAsText(), MapItem.class);
+		assert(r.getStatus().isSuccess());
+		return saved;
 	}
 }

@@ -87,5 +87,12 @@ public class AppUtils
 		return Math.sqrt(x+y);
 	}
 	
-	
+	public static boolean isNullOrEmpty(String s)
+	{
+		return (s == null || "".equals(s));
+	}
+	public static String emptyIfNull(String s)
+	{
+		return s == null ? "" : s;
+	}
 }

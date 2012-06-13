@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.location.Address;
 import android.location.Location;
 import android.os.Handler;
@@ -28,20 +29,22 @@ import com.google.android.maps.Projection;
 import com.scurab.android.myplaces.M;
 import com.scurab.android.myplaces.R;
 import com.scurab.android.myplaces.activity.MainActivity;
+import com.scurab.android.myplaces.activity.MapItemActivity;
 import com.scurab.android.myplaces.datamodel.MapItem;
 import com.scurab.android.myplaces.datamodel.MyPosition;
 import com.scurab.android.myplaces.datamodel.Star;
 import com.scurab.android.myplaces.interfaces.ActivityLifecycleListener;
 import com.scurab.android.myplaces.interfaces.ActivityOnBackPressed;
 import com.scurab.android.myplaces.interfaces.ActivityOptionsMenuListener;
+import com.scurab.android.myplaces.interfaces.ActivityResultListener;
 import com.scurab.android.myplaces.interfaces.OnLocationListener;
 import com.scurab.android.myplaces.overlay.MyPlaceOverlay;
 import com.scurab.android.myplaces.util.AppUtils;
 import com.scurab.android.myplaces.util.DialogBuilder;
 import com.scurab.android.myplaces.widget.MapItemPanel;
-import com.scurab.android.myplaces.widget.SmileyDialog;
+import com.scurab.android.myplaces.widget.dialog.SmileyDialog;
 
-public class MainActivityPresenter15 extends BasePresenter implements ActivityOptionsMenuListener, ActivityLifecycleListener, ActivityOnBackPressed
+public class MainActivityPresenter15 extends BasePresenter implements ActivityOptionsMenuListener, ActivityLifecycleListener, ActivityOnBackPressed, ActivityResultListener
 {
 	public static final int STATE_DEFAULT = 0;
 	public static final int STATE_ADDING_NEW_ITEM = 1;
@@ -110,6 +113,15 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
 		
 		mContext.setOnBackPressedListener(this);
 		
+		mContext.getMapItemPanel().setOnMoreButtonClickListener(new MapItemPanel.OnMoreButtonClickListener()
+		{
+			@Override
+			public void onClick(View v, MapItem item)
+			{
+				onMoreButtonClick(item);
+			}
+		});		
+		mContext.setActivityOnResultListener(this);
 	}
 	
 	public void onMyLocationClick()
@@ -155,6 +167,14 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
 		mStarOverlays = new ArrayList<MyPlaceOverlay<Star>>();
 		mMapItemOverlays = new ArrayList<MyPlaceOverlay<MapItem>>();
 		loadData();
+	}
+	
+	public void onMoreButtonClick(MapItem item)
+	{
+		Intent i = new Intent(mContext,MapItemActivity.class);
+		i.putExtra(M.Constants.MAP_ITEM, item);
+//		i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+		mContext.startActivityForResult(i, M.Constants.REQUEST_EDIT_MAP_ITEM);
 	}
 	
 	protected PresenterHandler createHandler(Context c)
@@ -648,5 +668,66 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
 		if(res)
 			mip.hide();
 		return res;
+	}
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data)
+	{
+		if(requestCode == M.Constants.REQUEST_EDIT_MAP_ITEM)
+		{
+			if(resultCode == M.Constants.RESULT_DELETE)
+			{
+				MapItem mi = (MapItem) data.getExtras().get(M.Constants.MAP_ITEM);
+				onDeletedMapItem(mi);
+			}
+			else if (resultCode == M.Constants.RESULT_ADD)
+			{
+				MapItem mi = (MapItem) data.getExtras().get(M.Constants.NEW_MAP_ITEM);
+				onAddedMapItem(mi);
+			}
+			else if (resultCode == M.Constants.RESULT_UPDATE)
+			{
+				MapItem oldOne = (MapItem) data.getExtras().get(M.Constants.MAP_ITEM);
+				MapItem newOne = (MapItem) data.getExtras().get(M.Constants.NEW_MAP_ITEM);
+				onUpdatedMapItem(oldOne, newOne);
+			}
+		}
+	}
+	
+	protected void onDeletedMapItem(MapItem deleted)
+	{
+		for(MyPlaceOverlay<MapItem> item : mMapItemOverlays)
+		{
+			MapItem onMap = item.getObject();
+			if(onMap.getId() == deleted.getId())
+			{
+				getOverlayList().remove(item);
+				mMapItemOverlays.remove(item);
+				mMapView.invalidate();
+				mContext.getMapItemPanel().hide();
+				break;
+			}
+		}
+	}
+	
+	protected void onUpdatedMapItem(MapItem oldOne, MapItem newOne)
+	{
+		for(MyPlaceOverlay<MapItem> item : mMapItemOverlays)
+		{
+			MapItem onMap = item.getObject();
+			if(onMap.getId() == oldOne.getId())
+			{
+				getOverlayList().remove(item);
+				mMapItemOverlays.remove(item);
+				break;
+			}
+		}
+		onAddedMapItem(newOne);
+		mContext.getMapItemPanel().setMapItem(newOne);
+	}
+	
+	protected void onAddedMapItem(MapItem newOne)
+	{
+		onLoadedMapItems(new MapItem[] {newOne});
 	}
 }

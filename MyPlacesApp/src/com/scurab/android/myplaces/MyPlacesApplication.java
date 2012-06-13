@@ -1,7 +1,9 @@
 package com.scurab.android.myplaces;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import android.app.Application;
 import android.content.Context;
@@ -89,4 +91,23 @@ public class MyPlacesApplication extends Application
 		Geocoder g = new Geocoder(this);
 		return g.getFromLocationName(query, 5);
 	}
+
+	public List<Address> getLocation(double x, double y) throws IOException
+	{
+		double currentLatitude = y;
+		double currentLongitude = x;
+		Geocoder gcd = new Geocoder(this, Locale.getDefault());
+		List<Address> addresses = gcd.getFromLocation(currentLatitude, currentLongitude, 3);
+		if(addresses == null)
+			addresses = new ArrayList<Address>();
+		return addresses;
+	}
+	
+	private LocationListener lh = new LocationListener()
+	{
+		@Override public void onStatusChanged(String provider, int status, Bundle extras){}
+		@Override public void onProviderEnabled(String provider){}
+		@Override public void onProviderDisabled(String provider){}
+		@Override public void onLocationChanged(Location location){}
+	};
 }

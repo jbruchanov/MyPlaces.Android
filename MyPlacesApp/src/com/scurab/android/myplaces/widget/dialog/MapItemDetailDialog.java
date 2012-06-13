@@ -1,12 +1,9 @@
-package com.scurab.android.myplaces.widget;
+package com.scurab.android.myplaces.widget.dialog;
 
 import java.util.Date;
 
 import com.scurab.android.myplaces.R;
 import com.scurab.android.myplaces.datamodel.Detail;
-import com.scurab.android.myplaces.datamodel.MapItemDetailItem;
-
-import android.app.AlertDialog;
 import android.content.Context;
 import android.text.format.DateFormat;
 import android.view.Gravity;
