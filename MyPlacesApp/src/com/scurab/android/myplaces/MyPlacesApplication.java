@@ -1,6 +1,7 @@
 package com.scurab.android.myplaces;
 
 import java.io.IOException;
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -24,6 +25,31 @@ public class MyPlacesApplication extends Application
 	private PropertyProvider mPropertyProvider;
 	private LocationManager mLocationManager;
 
+	private UncaughtExceptionHandler mHandler;
+
+	@Override
+	protected void attachBaseContext(final Context base)
+	{
+		super.attachBaseContext(base);
+		mHandler = Thread.getDefaultUncaughtExceptionHandler();
+		Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler()
+		{
+			@Override
+			public void uncaughtException(Thread thread, Throwable ex)
+			{
+				try
+				{
+					String d = M.handleUncoughtError(thread, ex, base);
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+				}
+				mHandler.uncaughtException(thread, ex);
+			}
+		});
+	}
+	
 	public ServerConnection getServerConnection()
 	{
 		if(mServer == null)

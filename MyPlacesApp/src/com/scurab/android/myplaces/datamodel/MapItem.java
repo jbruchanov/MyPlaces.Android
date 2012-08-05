@@ -179,6 +179,8 @@ public class MapItem extends MapElement implements Serializable
 			return R.drawable.ico_music;
 		else if(t.equals("zahrádka"))
 			return R.drawable.ico_patio;
+		else if(t.equals("sushi"))
+			return R.drawable.ico_sushi;
 		else
 			return R.drawable.ico_search;
 	}

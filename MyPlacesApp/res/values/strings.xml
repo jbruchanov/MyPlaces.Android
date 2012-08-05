@@ -4,7 +4,8 @@
     <string name="app_name">MyPlacesApp</string>
     <string name="txtClickToMapToSelectPosition">Click to map to select position</string>
     <string name="txtPleaseWait3Dot">Please wait ...</string>
-    <string name="MAP_KEY_DEBUG">0zaMruQCEG45rNlv_yDsCSm3SKJ2BTnMOeP-H3w</string>
+<!--     <string name="MAP_KEY_DEBUG">0zaMruQCEG45rNlv_yDsCSm3SKJ2BTnMOeP-H3w</string> -->
+	<string name="MAP_KEY_DEBUG">0zaMruQCEG46yNFFkv22jSZJdlk7KMNuGwfeztg</string>
     <string name="errMissingName">Missing name!</string>
     <string name="errMissingStreet">Missing street!</string>
     <string name="errMissingType">Missing type!</string>
