@@ -10,6 +10,7 @@ import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.scurab.android.myplaces.datamodel.MapItem;
 import com.scurab.android.myplaces.datamodel.Star;
 
@@ -21,7 +22,7 @@ import com.scurab.android.myplaces.datamodel.Star;
  */
 public class ServerConnection
 {
-	private final static Gson sGson = new Gson();
+	private final static Gson sGson = new GsonBuilder().setDateFormat("yyyy-MM-dd hh:mm:ss").create();
 	
 	private final String mServerUrl;
 	private final String mStarsUrl;

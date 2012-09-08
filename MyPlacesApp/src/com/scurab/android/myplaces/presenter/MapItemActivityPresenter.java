@@ -48,6 +48,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.Toast;
 
 public class MapItemActivityPresenter extends BasePresenter implements ActivityOptionsMenuListener, ActivityContextMenuListener
 {
@@ -608,12 +609,19 @@ public class MapItemActivityPresenter extends BasePresenter implements ActivityO
 	
 	private void setCurrentMapItemToMap(boolean move)
 	{
-		mMapView.getOverlays().clear();
-		mMapView.getOverlays().add(mCurrentMapItem);
-		if(move)
+		if(mCurrentMapItem == null)
 		{
-			MapController mc = mMapView.getController();
-			mc.setCenter(mCurrentMapItem.getCenter());
+			Toast.makeText(mContext, R.string.txtNotLoadedYet, Toast.LENGTH_SHORT).show();
+		}
+		else
+		{
+			mMapView.getOverlays().clear();
+			mMapView.getOverlays().add(mCurrentMapItem);
+			if(move)
+			{
+				MapController mc = mMapView.getController();
+				mc.setCenter(mCurrentMapItem.getCenter());
+			}
 		}
 	}
 }

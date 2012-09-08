@@ -13,4 +13,5 @@
     <string name="txtRUSure">Are you sure ?</string>
     <string name="txtNothingFound">Nothing found!</string>
     <string name="errInstallStreetViewFirst">Install StreetView first!</string>
+    <string name="txtNotLoadedYet">Not loaded yet!</string>
 </resources>
