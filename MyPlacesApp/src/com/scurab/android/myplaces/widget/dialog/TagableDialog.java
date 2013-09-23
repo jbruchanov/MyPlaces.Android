@@ -3,23 +3,19 @@ package com.scurab.android.myplaces.widget.dialog;
 import android.app.AlertDialog;
 import android.content.Context;
 
-public abstract class TagableDialog extends AlertDialog
-{
-	private Object mTag;
-	
-	protected TagableDialog(Context context)
-	{
-		super(context);
-	}
+public abstract class TagableDialog extends AlertDialog {
+    private Object mTag;
 
-	public Object getTag()
-	{
-		return mTag;
-	}
+    protected TagableDialog(Context context) {
+        super(context);
+    }
 
-	public void setTag(Object tag)
-	{
-		mTag = tag;
-	}
-	
+    public Object getTag() {
+        return mTag;
+    }
+
+    public void setTag(Object tag) {
+        mTag = tag;
+    }
+
 }

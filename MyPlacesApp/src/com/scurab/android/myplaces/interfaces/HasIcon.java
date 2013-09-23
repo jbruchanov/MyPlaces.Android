@@ -1,6 +1,5 @@
 package com.scurab.android.myplaces.interfaces;
 
-public interface HasIcon
-{
-	int getIconResId();
+public interface HasIcon {
+    int getIconResId();
 }

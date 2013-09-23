@@ -55,7 +55,7 @@ public class MockServerConnection extends ServerConnection
 	}
 	
 	@Override
-	public String[] getMapItemTypes() throws ResourceException, IOException
+	public String[] getMapItemTypes() throws IOException
 	{	
 		return  new String[] {"Bar","Cafe-Pub","Café","Club","Fastfood","Hospoda","Kavárna","Pizzerie","Restaurace","Zahrádka"};
 	}
