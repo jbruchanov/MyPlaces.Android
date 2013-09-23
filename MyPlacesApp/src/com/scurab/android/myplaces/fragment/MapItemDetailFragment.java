@@ -168,7 +168,10 @@ public class MapItemDetailFragment extends Fragment
 
 	public void setMapItemTypes(String[] mapItemTypes)
 	{
-		mType.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, mapItemTypes));
+		if(mapItemTypes != null)
+		{
+			mType.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, mapItemTypes));
+		}
 	}
 	
 }
