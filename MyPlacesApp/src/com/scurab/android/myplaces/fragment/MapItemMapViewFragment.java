@@ -6,12 +6,19 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import com.google.android.maps.MapView;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
 import com.scurab.android.myplaces.R;
 
 public class MapItemMapViewFragment extends Fragment {
     private View mContentView;
-    private MapView mMapView;
+    private GoogleMap mGoogleMap;
+
+    private OnMapInitialized mOnMapInitialized;
+
+    public interface OnMapInitialized{
+        void onMapInitialized(GoogleMap map);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -24,14 +31,18 @@ public class MapItemMapViewFragment extends Fragment {
     private void inflateView(Context c) {
         if (mContentView == null) {
             mContentView = View.inflate(c, R.layout.mapitem_mapview, null);
-            mMapView = (MapView) mContentView.findViewById(R.id.mapView);
+            mGoogleMap = ((MapFragment) (getActivity()).getFragmentManager().findFragmentById(R.id.map)).getMap();
+            if(mOnMapInitialized  != null){
+                mOnMapInitialized.onMapInitialized(mGoogleMap);
+            }
         }
     }
 
-    public MapView getMapView(Context c) {
-        if (mContentView == null) {
-            inflateView(c);
-        }
-        return mMapView;
+    public void setOnMapInitialized(OnMapInitialized onMapInitialized) {
+        mOnMapInitialized = onMapInitialized;
+    }
+
+    public GoogleMap getMapView() {
+        return mGoogleMap;
     }
 }

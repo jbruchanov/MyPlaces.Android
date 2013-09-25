@@ -5,7 +5,8 @@ import android.app.ActionBar.Tab;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
-import com.google.android.maps.MapView;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.scurab.android.myplaces.R;
 import com.scurab.android.myplaces.fragment.MapItemContextFragment;
 import com.scurab.android.myplaces.fragment.MapItemDetailFragment;
@@ -15,7 +16,6 @@ import com.scurab.android.myplaces.presenter.MapItemActivityPresenter;
 public class MapItemActivity extends BaseMapActivity {
     private View mContentView;
     private MapItemActivityPresenter mPresenter;
-    private MapView mMapView;
 
     @Override
     protected void onCreate(Bundle b) {
@@ -40,8 +40,6 @@ public class MapItemActivity extends BaseMapActivity {
         tab = actionBar.newTab().setText(R.string.lblContext)
                 .setTabListener(mPresenter.new TabListener<MapItemContextFragment>(this, "3", MapItemContextFragment.class));
         actionBar.addTab(tab);
-
-        mMapView = (MapView) findViewById(R.id.mapView);
     }
 
     @Override
@@ -63,9 +61,5 @@ public class MapItemActivity extends BaseMapActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         return super.onOptionsItemSelected(item);
-    }
-
-    public MapView getMapView() {
-        return mMapView;
     }
 }

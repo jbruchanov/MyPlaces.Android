@@ -1,14 +1,13 @@
 package com.scurab.android.myplaces.activity;
 
+import android.app.Activity;
 import android.content.Intent;
-import android.support.v4.app.FragmentActivity;
 import android.view.*;
 import android.view.ContextMenu.ContextMenuInfo;
-import com.google.android.maps.MapActivity;
 import com.scurab.android.myplaces.interfaces.*;
 import com.scurab.android.myplaces.presenter.BasePresenter;
 
-public abstract class BaseMapActivity extends FragmentActivity {
+public abstract class BaseMapActivity extends Activity {
     public abstract View getContentView();
 
     public abstract BasePresenter getPresenter();

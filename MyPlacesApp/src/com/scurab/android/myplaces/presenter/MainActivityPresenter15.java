@@ -33,6 +33,7 @@ import com.scurab.android.myplaces.widget.dialog.SmileyDialog;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivityPresenter15 extends BasePresenter implements ActivityOptionsMenuListener, ActivityLifecycleListener, ActivityOnBackPressed, ActivityResultListener, ActivityKeyListener,
         GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener {
@@ -641,36 +642,41 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
     }
 
     protected void onDeletedMapItem(MapItem deleted) {
-
-        //FIXME:
-//        for (MyPlaceOverlay<MapItem> item : mMapItemOverlays) {
-//            MapItem onMap = item.getObject();
-//            if (onMap.getId() == deleted.getId()) {
-//                getOverlayList().remove(item);
-//                mMapItemOverlays.remove(item);
-////                mMap.invalidate();
-//                mContext.getMapItemPanel().hide();
-//                break;
-//            }
-//        }
+        Marker marker = null;
+        for(Map.Entry<Marker, MapElement> entry : mMarkers.entrySet()){
+            MapElement me = entry.getValue();
+            if(me.getId() == deleted.getId() && me instanceof MapItem){
+                marker = entry.getKey();
+                break;
+            }
+        }
+        marker.remove();
+        mMarkers.remove(marker);
+        mPlaces.remove(deleted);
+        mMap.animateCamera(CameraUpdateFactory.newLatLng(deleted.getLatLng()));
+        mContext.getMapItemPanel().hide();
     }
 
     protected void onUpdatedMapItem(MapItem oldOne, MapItem newOne) {
-        //FIXME:
-//        for (MyPlaceOverlay<MapItem> item : mMapItemOverlays) {
-//            MapItem onMap = item.getObject();
-//            if (onMap.getId() == oldOne.getId()) {
-//                getOverlayList().remove(item);
-//                mMapItemOverlays.remove(item);
-//                break;
-//            }
-//        }
-//        onAddedMapItem(newOne);
-//        mContext.getMapItemPanel().setMapItem(newOne);
+        Marker marker = null;
+        for(Map.Entry<Marker, MapElement> entry : mMarkers.entrySet()){
+            MapElement me = entry.getValue();
+            if(me.getId() == oldOne.getId() && me instanceof MapItem){
+                marker = entry.getKey();
+                marker.setPosition(newOne.getLatLng());
+                break;
+            }
+        }
+        if(marker != null){
+            mMarkers.put(marker, newOne);
+        }
+        mContext.getMapItemPanel().setMapItem(newOne);
+        mMap.animateCamera(CameraUpdateFactory.newLatLng(newOne.getLatLng()));
     }
 
     protected void onAddedMapItem(MapItem newOne) {
         onLoadedMapItems(new MapItem[]{newOne});
+        mMap.animateCamera(CameraUpdateFactory.newLatLng(newOne.getLatLng()));
     }
 
     @Override

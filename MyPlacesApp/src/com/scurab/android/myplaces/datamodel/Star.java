@@ -4,14 +4,9 @@ import com.scurab.android.myplaces.R;
 import com.scurab.android.myplaces.util.AppUtils;
 
 public class Star extends MapElement {
-    private long id;
     private String note;
     private String type = "10";
 
-
-    public long getId() {
-        return id;
-    }
 
     public String getTitle() {
         return note;
@@ -31,10 +26,6 @@ public class Star extends MapElement {
 
     public void setType(String type) {
         this.type = type;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 
     public String getIconUrl() {

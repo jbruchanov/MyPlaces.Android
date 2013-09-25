@@ -5,6 +5,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.scurab.android.myplaces.R;
 import com.scurab.android.myplaces.presenter.BasePresenter;
@@ -19,6 +20,12 @@ public class MainActivity extends BaseMapActivity {
     private ProgressBar mProgressBar;
     private MainActivityPresenter15 mPresenter;
     private MapItemPanel mMapItemPanel;
+
+    public ImageButton getReloadButton() {
+        return mReload;
+    }
+
+    private ImageButton mReload;
 
 
     @Override
@@ -36,8 +43,9 @@ public class MainActivity extends BaseMapActivity {
 
     protected void init() {
         setContentView(getContentView());
-        mGoogleMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
+        mGoogleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
         mMyLocation = (ImageButton) findViewById(R.id.ibMyLocation);
+        mReload = (ImageButton)findViewById(R.id.ibReload);
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
         mMapItemPanel = (MapItemPanel) findViewById(R.id.mapItemPanel);
     }

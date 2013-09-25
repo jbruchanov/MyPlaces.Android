@@ -5,10 +5,22 @@ import com.scurab.android.myplaces.interfaces.HasCoordinates;
 import com.scurab.android.myplaces.interfaces.HasIcon;
 import com.scurab.android.myplaces.util.AppUtils;
 
-public abstract class MapElement implements HasIcon, HasCoordinates {
+import java.io.Serializable;
+
+public abstract class MapElement implements Serializable, HasIcon, HasCoordinates {
+
+    private long id;
 
     private double x;
     private double y;
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 
     @Override
     public double getX() {

@@ -11,6 +11,14 @@ import android.view.*;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.Toast;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
@@ -39,7 +47,7 @@ import com.scurab.android.myplaces.widget.dialog.MapItemDetailDialog;
 import java.security.InvalidParameterException;
 import java.util.List;
 
-public class MapItemActivityPresenter extends BasePresenter implements ActivityOptionsMenuListener, ActivityContextMenuListener {
+public class MapItemActivityPresenter extends BasePresenter implements ActivityOptionsMenuListener, ActivityContextMenuListener, GoogleMap.OnMapClickListener {
     private MapItemActivity mContext;
     private MapItem mDetailedItem;
     private String[] mMapItemTypes = null;
@@ -47,8 +55,9 @@ public class MapItemActivityPresenter extends BasePresenter implements ActivityO
     private Fragment mCurrentFragment;
     private MapItemDetailFragment mDetailFragment;
     private MapItemContextFragment mContextFragment;
-    private MapView mMapView;
-    private EditPlaceOverlay<MapItem> mCurrentMapItem;
+
+    private GoogleMap mMapView;
+    private Marker mCurrentMarker;
 
     public MapItemActivityPresenter(MapItemActivity context) {
         super(context);
@@ -65,34 +74,6 @@ public class MapItemActivityPresenter extends BasePresenter implements ActivityO
     private void bind() {
         mContext.setActivityOptionsMenuListener(this);
         mContext.setActivityContextMenuListener(this);
-    }
-
-    private View.OnTouchListener mMapTouchListener = new View.OnTouchListener() {
-        @Override
-        public boolean onTouch(View v, MotionEvent event) {
-            boolean result = false;
-            if (event.getAction() == MotionEvent.ACTION_UP) {
-                long start = event.getDownTime();
-                long end = event.getEventTime();
-                if (end - start < 150) //click is shorter than 100ms
-                {
-                    Projection proj = mMapView.getProjection();
-                    GeoPoint loc = proj.fromPixels((int) event.getX(), (int) event.getY());
-                    onMapClick(loc);
-                    result = true;
-                }
-            }
-            return result;
-        }
-    };
-
-    public void onMapClick(GeoPoint loc) {
-        mDetailedItem.setX(loc.getLongitudeE6() / M.COORD_HELP_MAPPER);
-        mDetailedItem.setY(loc.getLatitudeE6() / M.COORD_HELP_MAPPER);
-        mCurrentMapItem = new EditPlaceOverlay<MapItem>(mContext, mDetailedItem);
-        setCurrentMapItemToMap(false);
-        mMapView.invalidate();
-        mDetailFragment.setMapItem(mDetailedItem);
     }
 
     public void selectTab(int indexTab) {
@@ -242,7 +223,7 @@ public class MapItemActivityPresenter extends BasePresenter implements ActivityO
                 try {
                     MyPlacesApplication mpa = (MyPlacesApplication) mContext.getApplication();
                     ServerConnection sc = mpa.getServerConnection();
-                    sc.delete(mCurrentMapItem.getObject());
+                    sc.delete(mDetailedItem);
                     mContext.setResult(M.Constants.RESULT_DELETE, mContext.getIntent());
                     mContext.finish();
                     showMessage(R.string.lblDone);
@@ -403,6 +384,17 @@ public class MapItemActivityPresenter extends BasePresenter implements ActivityO
         inflater.inflate(R.menu.menu_editdelete, menu);
     }
 
+    @Override
+    public void onMapClick(LatLng latLng) {
+        mDetailedItem.setX(latLng.longitude);
+        mDetailedItem.setY(latLng.latitude);
+        mCurrentMarker.setPosition(latLng);
+        mDetailFragment.setMapItem(mDetailedItem);
+        if(mMapView != null){
+            mMapView.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+        }
+    }
+
     public class TabListener<T extends Fragment> implements ActionBar.TabListener {
         private Fragment mFragment;
         private final Activity mActivity;
@@ -433,9 +425,19 @@ public class MapItemActivityPresenter extends BasePresenter implements ActivityO
                 mDetailFragment = (MapItemDetailFragment) mFragment;
             } else if ("2".equals(mTag)) {
                 tag = 2;
-                mMapView = ((MapItemMapViewFragment) mFragment).getMapView(mContext);
-                mMapView.setOnTouchListener(mMapTouchListener);
-                setCurrentMapItemToMap(true);
+                final MapItemMapViewFragment tempRef = ((MapItemMapViewFragment)mFragment);
+                tempRef.setOnMapInitialized(new MapItemMapViewFragment.OnMapInitialized() {
+                    @Override
+                    public void onMapInitialized(GoogleMap map) {
+                        mMapView = map;
+                        mMapView.setOnMapClickListener(MapItemActivityPresenter.this);
+                        tempRef.setOnMapInitialized(null);
+                        if(mDetailedItem  != null){
+                            setCurrentMapItemToMap(mDetailedItem, true);
+                        }
+                    }
+                });
+
             } else if ("3".equals(mTag)) {
                 tag = 3;
                 mContextFragment = (MapItemContextFragment) mFragment;
@@ -504,24 +506,33 @@ public class MapItemActivityPresenter extends BasePresenter implements ActivityO
                 }
 
                 mContext.setTitle(mDetailedItem.getTitle());
-                mCurrentMapItem = new EditPlaceOverlay<MapItem>(mContext, result);
-                if (mMapView != null) {
-                    setCurrentMapItemToMap(true);
+                if (getMap() != null) {
+                    setCurrentMapItemToMap(result, true);
                 }
             }
         }
     }
 
-    private void setCurrentMapItemToMap(boolean move) {
-        if (mCurrentMapItem == null) {
-            Toast.makeText(mContext, R.string.txtNotLoadedYet, Toast.LENGTH_SHORT).show();
-        } else {
-            mMapView.getOverlays().clear();
-            mMapView.getOverlays().add(mCurrentMapItem);
-            if (move) {
-                MapController mc = mMapView.getController();
-                mc.setCenter(mCurrentMapItem.getCenter());
-            }
+    private void setCurrentMapItemToMap(MapItem item, boolean move) {
+        if(mCurrentMarker != null){
+            mCurrentMarker.remove();
         }
+        MarkerOptions mo = createMyLocationMarker(item.getLatLng());
+        mCurrentMarker = mMapView.addMarker(mo);
+
+        if (move) {
+            CameraUpdate cu = CameraUpdateFactory.newLatLngZoom(item.getLatLng(), 16);
+            mMapView.animateCamera(cu);
+        }
+    }
+
+    private MarkerOptions createMyLocationMarker(LatLng latLng) {
+        final MarkerOptions mo = new MarkerOptions().position(latLng)
+                .visible(true);
+        return mo;
+    }
+
+    public GoogleMap getMap() {
+        return mMapView;
     }
 }

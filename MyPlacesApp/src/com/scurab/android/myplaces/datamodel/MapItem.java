@@ -14,8 +14,8 @@ import java.util.List;
  *
  * @author Joe Scurab
  */
-public class MapItem extends MapElement implements Serializable {
-    private long id;
+public class MapItem extends MapElement {
+
     private String type = "";
 
     private String name = "";
@@ -32,14 +32,6 @@ public class MapItem extends MapElement implements Serializable {
     private List<String> pros;
     private List<String> cons;
     private List<Detail> details;
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
 
     public String getType() {
         return type;
