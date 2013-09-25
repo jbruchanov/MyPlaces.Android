@@ -36,7 +36,6 @@ import com.scurab.android.myplaces.fragment.MapItemDetailFragment;
 import com.scurab.android.myplaces.fragment.MapItemMapViewFragment;
 import com.scurab.android.myplaces.interfaces.ActivityContextMenuListener;
 import com.scurab.android.myplaces.interfaces.ActivityOptionsMenuListener;
-import com.scurab.android.myplaces.overlay.EditPlaceOverlay;
 import com.scurab.android.myplaces.server.ServerConnection;
 import com.scurab.android.myplaces.util.AppUtils;
 import com.scurab.android.myplaces.util.DialogBuilder;

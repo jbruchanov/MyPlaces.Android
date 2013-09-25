@@ -30,10 +30,7 @@ import com.scurab.android.myplaces.util.DialogBuilder;
 import com.scurab.android.myplaces.widget.MapItemPanel;
 import com.scurab.android.myplaces.widget.dialog.SmileyDialog;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class MainActivityPresenter15 extends BasePresenter implements ActivityOptionsMenuListener, ActivityLifecycleListener, ActivityOnBackPressed, ActivityResultListener, ActivityKeyListener,
         GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener {
@@ -692,5 +689,9 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         return false;
+    }
+
+    public Collection<Marker> getMarkerCollection(){
+        return new ArrayList<Marker>(mMarkers.keySet());
     }
 }

@@ -2,8 +2,6 @@ package com.scurab.android.myplaces.server;
 
 import java.io.IOException;
 
-import org.restlet.resource.ResourceException;
-
 import android.text.Html;
 import com.scurab.android.myplaces.server.ServerConnection;
 

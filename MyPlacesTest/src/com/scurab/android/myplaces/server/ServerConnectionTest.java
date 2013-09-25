@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import org.restlet.resource.ResourceException;
-
 import com.scurab.android.myplaces.M;
 import com.scurab.android.myplaces.datamodel.MapItem;
 import com.scurab.android.myplaces.datamodel.Star;
@@ -139,7 +137,7 @@ public class ServerConnectionTest extends TestCase
 //		ms.save(s);
 //	}
 	
-	public void testGetMapItemTypesRealServer() throws ResourceException, IOException
+	public void testGetMapItemTypesRealServer() throws IOException
 	{
 		ServerConnection sc = new ServerConnection(serverUrl);
 		String[] data = sc.getMapItemTypes();
