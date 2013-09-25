@@ -59,7 +59,6 @@ public class MapItemPanel extends LinearLayout implements View.OnClickListener {
 
         mContext = getContext();
         mContentView = View.inflate(mContext, R.layout.mapitempanel, this);
-        setBackgroundColor(Color.BLACK);
 
         mNameTextView = (TextView) mContentView.findViewById(R.id.tvName);
         mStreetTextView = (TextView) mContentView.findViewById(R.id.tvStreet);
