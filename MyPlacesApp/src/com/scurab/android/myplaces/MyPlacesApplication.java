@@ -1,41 +1,50 @@
 package com.scurab.android.myplaces;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.location.*;
 import android.os.Bundle;
+import com.scurab.android.KnowsActiveActivity;
 import com.scurab.android.myplaces.interfaces.OnLocationListener;
 import com.scurab.android.myplaces.server.ServerConnection;
 import com.scurab.android.myplaces.util.PropertyProvider;
+import com.scurab.android.rlw.AsyncCallback;
+import com.scurab.android.rlw.FakeTrustManager;
+import com.scurab.android.rlw.RLog;
+import com.scurab.android.rlw.RemoteLog;
 
 import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.net.MalformedURLException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class MyPlacesApplication extends Application {
+public class MyPlacesApplication extends Application{
     private ServerConnection mServer;
     private PropertyProvider mPropertyProvider;
     private LocationManager mLocationManager;
 
-    private UncaughtExceptionHandler mHandler;
-
     @Override
     protected void attachBaseContext(final Context base) {
         super.attachBaseContext(base);
-        mHandler = Thread.getDefaultUncaughtExceptionHandler();
-        Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler() {
-            @Override
-            public void uncaughtException(Thread thread, Throwable ex) {
-                try {
-                    String d = M.handleUncoughtError(thread, ex, base);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                mHandler.uncaughtException(thread, ex);
-            }
-        });
+        initRemoteLog();
+    }
+
+    private void initRemoteLog(){
+        final String URL = "http://rlw.scurab.com/";
+        RemoteLog.catchUncaughtErrors(Thread.currentThread());
+        RemoteLog.setLogMode(RLog.ALL);
+        RemoteLog.resendRegistration();
+        try {
+            RemoteLog.init(this, "MyPlaces", URL, null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public ServerConnection getServerConnection() {

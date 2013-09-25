@@ -2,10 +2,16 @@ package com.scurab.android.myplaces.activity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
 import android.view.*;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.widget.Toast;
+import com.scurab.android.SOSListener;
+import com.scurab.android.myplaces.MyPlacesApplication;
 import com.scurab.android.myplaces.interfaces.*;
 import com.scurab.android.myplaces.presenter.BasePresenter;
+import com.scurab.android.rlw.RLog;
 
 public abstract class BaseMapActivity extends Activity {
     public abstract View getContentView();
@@ -18,6 +24,27 @@ public abstract class BaseMapActivity extends Activity {
     private ActivityOnBackPressed mOnBackPressedListener;
     private ActivityResultListener mActivityResultListener;
     private ActivityKeyListener mActivityKeyListener;
+
+    private SOSListener mSOSListener;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mSOSListener = new SOSListener(SOSListener.Strategy.LONG_VOLUME_DOWN, new SOSListener.OnSOSListener() {
+            @Override
+            public void onSOS() {
+                RLog.takeScreenshot(this,"SOS", BaseMapActivity.this);
+                Toast.makeText(BaseMapActivity.this, "SOS screenshot sent", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        Log.v("dispatchKeyEvent", "" + event.getKeyCode());
+        mSOSListener.dispatchKeyEvent(event);
+        return super.dispatchKeyEvent(event);
+    }
 
     public void setActivityContextMenuListener(ActivityContextMenuListener listener) {
         mContextListener = listener;
