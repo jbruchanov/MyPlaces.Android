@@ -28,9 +28,9 @@ public class MainActivityPresenterMyLocationTest extends ActivityUnitTestCase<Ma
 		startActivity(new Intent(), null, null);
 		MainActivity ma = getActivity();
 		MainActivityPresenter15 p = (MainActivityPresenter15) ma.getPresenter();		
-		int c = p.getOverlayList().size();
+		int c = p.getMarkerCollection().size();
 		p.addMyLocationOverlay(0,0);
-		assertEquals(c+1,p.getOverlayList().size());
+		assertEquals(c+1,p.getMarkerCollection().size());
 	}
 	
 	public void testRemoveMyLocation()
@@ -38,11 +38,11 @@ public class MainActivityPresenterMyLocationTest extends ActivityUnitTestCase<Ma
 		startActivity(new Intent(), null, null);
 		MainActivity ma = getActivity();
 		MainActivityPresenter15 p = (MainActivityPresenter15) ma.getPresenter();		
-		int c = p.getOverlayList().size();
+		int c = p.getMarkerCollection().size();
 		p.addMyLocationOverlay(0,0);
-		assertEquals(c+1,p.getOverlayList().size());
+		assertEquals(c+1,p.getMarkerCollection().size());
 		p.removeMyLocationOverlay();
-		assertEquals(c,p.getOverlayList().size());
+		assertEquals(c,p.getMarkerCollection().size());
 	}
 	
 	private class MockMyPlacesApplication extends MyPlacesApplication

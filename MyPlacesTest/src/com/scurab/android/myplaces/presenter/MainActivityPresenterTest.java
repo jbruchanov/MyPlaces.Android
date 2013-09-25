@@ -1,5 +1,6 @@
 package com.scurab.android.myplaces.presenter;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.maps.GeoPoint;
 import com.scurab.android.myplaces.R;
 import com.scurab.android.myplaces.server.MockServerConnection;
@@ -19,7 +20,7 @@ public class MainActivityPresenterTest extends AndroidTestCase
 		mma.onAddMenuItemClick(R.id.muAddStar);
 		assertEquals(MainActivityPresenter15.STATE_ADDING_NEW_STAR,mma.getState());
 		//click to map should return state to default
-		mma.onMapClick(new GeoPoint(0, 0));
+		mma.onMapClick(new LatLng(0, 0));
 		assertEquals(MainActivityPresenter15.STATE_DEFAULT,mma.getState());
 	}
 
@@ -30,7 +31,7 @@ public class MainActivityPresenterTest extends AndroidTestCase
 		mma.onAddMenuItemClick(R.id.muAddMapItem);
 		assertEquals(MainActivityPresenter15.STATE_ADDING_NEW_ITEM,mma.getState());
 		//click to map should return state to default
-		mma.onMapClick(new GeoPoint(0, 0));
+		mma.onMapClick(new LatLng(0, 0));
 		assertEquals(MainActivityPresenter15.STATE_DEFAULT,mma.getState());
 	}
 	
@@ -49,7 +50,7 @@ public class MainActivityPresenterTest extends AndroidTestCase
 		}
 		
 		@Override
-		protected void showSmileyDialog(GeoPoint location)
+		protected void showSmileyDialog(LatLng location)
 		{
 			onAddNewStar(location,0);
 		}

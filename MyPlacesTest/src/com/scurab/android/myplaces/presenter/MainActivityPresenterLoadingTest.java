@@ -3,6 +3,7 @@ package com.scurab.android.myplaces.presenter;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.maps.Overlay;
 import com.scurab.android.myplaces.activity.MainActivity;
 import com.scurab.android.myplaces.datamodel.MapItem;
@@ -59,7 +60,7 @@ public class MainActivityPresenterLoadingTest extends AndroidTestCase
 		mmap.onLoadingStarsImpl();
 		msc.DOWNLOAD_COUNT = 1;
 		assertTrue(checkedLoadedItemsToMap);
-		assertEquals(msc.DOWNLOAD_COUNT, mmap.getOverlayList().size());
+		assertEquals(msc.DOWNLOAD_COUNT, mmap.getMarkerCollection().size());
 	}
 	
 	public void testLoadToListOverlaysMapItems()
@@ -69,12 +70,12 @@ public class MainActivityPresenterLoadingTest extends AndroidTestCase
 		mmap.onLoadingMapItemsImpl();		
 		msc.DOWNLOAD_COUNT = 1;
 		assertTrue(checkedLoadedItemsToMap);
-		assertEquals(msc.DOWNLOAD_COUNT, mmap.getOverlayList().size());
+		assertEquals(msc.DOWNLOAD_COUNT, mmap.getMarkerCollection().size());
 	}
 	
 	private class MockMainActivityPresenter extends MainActivityPresenter15
 	{
-		List<Overlay> overlays;
+		List<Marker> overlays;
 		boolean stars = false;
 		boolean mapitems = false;
 		public MockMainActivityPresenter(MainActivity context)
@@ -133,10 +134,10 @@ public class MainActivityPresenterLoadingTest extends AndroidTestCase
 		};
 		
 		@Override
-		protected List<Overlay> getOverlayList()
+		public List<Marker> getMarkerCollection()
 		{
 			if(overlays == null)
-				overlays = new ArrayList<Overlay>();
+				overlays = new ArrayList<Marker>();
 			return overlays;
 		}
 	}
