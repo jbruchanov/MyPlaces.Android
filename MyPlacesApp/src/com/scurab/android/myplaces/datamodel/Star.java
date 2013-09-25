@@ -7,18 +7,7 @@ public class Star extends MapElement {
     private long id;
     private String note;
     private String type = "10";
-    private double x;
-    private double y;
 
-    @Override
-    public double getX() {
-        return x;
-    }
-
-    @Override
-    public double getY() {
-        return y;
-    }
 
     public long getId() {
         return id;
@@ -46,14 +35,6 @@ public class Star extends MapElement {
 
     public void setId(long id) {
         this.id = id;
-    }
-
-    public void setX(double x) {
-        this.x = AppUtils.round(x, 6);
-    }
-
-    public void setY(double y) {
-        this.y = AppUtils.round(y, 6);
     }
 
     public String getIconUrl() {

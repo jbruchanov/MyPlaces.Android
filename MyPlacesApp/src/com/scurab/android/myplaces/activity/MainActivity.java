@@ -4,7 +4,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
-import com.google.android.maps.MapView;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.scurab.android.myplaces.R;
 import com.scurab.android.myplaces.presenter.BasePresenter;
 import com.scurab.android.myplaces.presenter.MainActivityPresenter15;
@@ -12,6 +13,7 @@ import com.scurab.android.myplaces.widget.MapItemPanel;
 
 public class MainActivity extends BaseMapActivity {
 
+    private GoogleMap mGoogleMap;
     private View mContentView;
     private ImageButton mMyLocation;
     private ProgressBar mProgressBar;
@@ -29,12 +31,12 @@ public class MainActivity extends BaseMapActivity {
     }
 
     protected MainActivityPresenter15 getActivityPresenter() {
-//        return new MainActivityPresenter15(this);
-        return null;
+        return new MainActivityPresenter15(this);
     }
 
     protected void init() {
         setContentView(getContentView());
+        mGoogleMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
         mMyLocation = (ImageButton) findViewById(R.id.ibMyLocation);
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
         mMapItemPanel = (MapItemPanel) findViewById(R.id.mapItemPanel);
@@ -52,9 +54,8 @@ public class MainActivity extends BaseMapActivity {
         return mContentView;
     }
 
-    @Deprecated
-    public MapView getMapView() {
-        return null;
+    public GoogleMap getMap() {
+        return mGoogleMap;
     }
 
     public ImageButton getMyLocationButton() {

@@ -27,9 +27,6 @@ public class MapItem extends MapElement implements Serializable {
     private String author = "";
     private String contact = "";
 
-    private double x;
-    private double y;
-
     private int rating;
 
     private List<String> pros;
@@ -98,24 +95,6 @@ public class MapItem extends MapElement implements Serializable {
 
     public void setAuthor(String author) {
         this.author = author;
-    }
-
-    @Override
-    public double getX() {
-        return x;
-    }
-
-    public void setX(double x) {
-        this.x = AppUtils.round(x, 6);
-    }
-
-    @Override
-    public double getY() {
-        return y;
-    }
-
-    public void setY(double y) {
-        this.y = AppUtils.round(y, 6);
     }
 
     public List<String> getPros() {

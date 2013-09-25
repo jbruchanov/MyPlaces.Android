@@ -1,7 +1,6 @@
 package com.scurab.android.myplaces.activity;
 
 import android.test.ActivityInstrumentationTestCase2;
-import com.scurab.android.myplaces.activity.MainActivity;
 
 public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActivity>
 {
@@ -14,7 +13,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
 	{
 		MainActivity ma = getActivity();
 
-		assertNotNull(ma.getMapView());
+		assertNotNull(ma.getMap());
 		assertNotNull(ma.getProgressBar());
 		assertNotNull(ma.getMyLocationButton());
 		assertNotNull(ma.getMapItemPanel());

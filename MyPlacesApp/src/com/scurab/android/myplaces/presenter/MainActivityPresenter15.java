@@ -14,25 +14,28 @@ import android.widget.EditText;
 import android.widget.PopupMenu;
 import android.widget.SearchView;
 import android.widget.Toast;
-import com.google.android.maps.*;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.*;
 import com.scurab.android.myplaces.M;
 import com.scurab.android.myplaces.R;
 import com.scurab.android.myplaces.activity.MainActivity;
 import com.scurab.android.myplaces.activity.MapItemActivity;
+import com.scurab.android.myplaces.datamodel.MapElement;
 import com.scurab.android.myplaces.datamodel.MapItem;
-import com.scurab.android.myplaces.datamodel.MyPosition;
 import com.scurab.android.myplaces.datamodel.Star;
 import com.scurab.android.myplaces.interfaces.*;
-import com.scurab.android.myplaces.overlay.MyPlaceOverlay;
-import com.scurab.android.myplaces.util.AppUtils;
 import com.scurab.android.myplaces.util.DialogBuilder;
 import com.scurab.android.myplaces.widget.MapItemPanel;
 import com.scurab.android.myplaces.widget.dialog.SmileyDialog;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Vector;
 
-public class MainActivityPresenter15 extends BasePresenter implements ActivityOptionsMenuListener, ActivityLifecycleListener, ActivityOnBackPressed, ActivityResultListener, ActivityKeyListener {
+public class MainActivityPresenter15 extends BasePresenter implements ActivityOptionsMenuListener, ActivityLifecycleListener, ActivityOnBackPressed, ActivityResultListener, ActivityKeyListener,
+        GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener {
     public static final int STATE_DEFAULT = 0;
     public static final int STATE_ADDING_NEW_ITEM = 1;
     public static final int STATE_ADDING_NEW_STAR = 2;
@@ -42,25 +45,16 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
 
     private int mState = STATE_DEFAULT;
 
-    private MapView mMapView;
+    private GoogleMap mMap;
     private PresenterHandler mHandler;
-    private MyPlaceOverlay<MyPosition> mMyLocationOverlay;
-    private List<MyPlaceOverlay<Star>> mStarOverlays;
-    private List<MyPlaceOverlay<MapItem>> mMapItemOverlays;
-    private SearchView mSearchView;
 
-    private View.OnTouchListener mMapTouchListener = new View.OnTouchListener() {
-        @Override
-        public boolean onTouch(View v, MotionEvent event) {
-            boolean result = false;
-            if (event.getAction() == MotionEvent.ACTION_UP) {
-                Projection proj = mMapView.getProjection();
-                GeoPoint loc = proj.fromPixels((int) event.getX(), (int) event.getY());
-                result = onMapClick(loc);
-            }
-            return result;
-        }
-    };
+
+    private List<Marker> mStars = new ArrayList<Marker>();
+    private List<Marker> mPlaces = new ArrayList<Marker>();
+    private HashMap<Marker, MapElement> mMarkers = new HashMap<Marker,MapElement>();
+    private Marker mMyLocation;
+
+    private SearchView mSearchView;
 
     private PopupMenu.OnMenuItemClickListener mAddPopupMenuListener = new PopupMenu.OnMenuItemClickListener() {
         @Override
@@ -80,10 +74,9 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
     private void bind() {
         mContext.setActivityOptionsMenuListener(this);
         mContext.setActivityListener(this);
-        if (mMapView != null) //null is only in tests!
-        {
-            mMapView.setOnTouchListener(mMapTouchListener);
-        }
+
+        mMap.setOnMarkerClickListener(this);
+        mMap.setOnMapClickListener(this);
 
         mContext.getMyLocationButton().setOnClickListener(new View.OnClickListener() {
             @Override
@@ -121,16 +114,17 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
         if (l == null) {
             return;
         }
-        GeoPoint center = mMapView.getProjection().fromPixels(mMapView.getWidth() / 2, mMapView.getHeight() / 2);
-        GeoPoint gp = new GeoPoint((int) (l.getLatitude() * M.COORD_HELP_MAPPER),
-                (int) (l.getLongitude() * M.COORD_HELP_MAPPER));
-        double distance = AppUtils.getDistance(center, gp);
-        int zoom = 19;
-        if (distance > 1000 || mMapView.getZoomLevel() != zoom) //approx half of display with zoom 19
+        LatLng newPost = new LatLng(l.getLatitude(), l.getLongitude());
+
+        //FIXME: distance handling
+        //LatLng latlng = mMap.getProjection().fromScreenLocation(new Point((int) event.getX(), (int) event.getY()));
+        //GeoPoint center = mMap.getProjection().fromPixels(mMap.getWidth() / 2, mMap.getHeight() / 2);
+        //double distance = AppUtils.getDistance(newPost, gp);
+        int zoom = 15;
+        if (/*distance > 1000 ||*/ ((int) mMap.getCameraPosition().zoom) != zoom) //approx half of display with zoom 19
         {
-            MapController c = mMapView.getController();
-            c.setZoom(zoom);
-            c.animateTo(gp);
+            CameraUpdate cu = CameraUpdateFactory.newLatLngZoom(newPost, zoom);
+            mMap.animateCamera(cu);
             mHandler.sendDelayedRemoveMyOverlay();
 //			Toast.makeText(mContext, "centered " + System.currentTimeMillis(), Toast.LENGTH_SHORT).show();
         }
@@ -138,10 +132,8 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
     }
 
     private void init() {
-        mMapView = mContext.getMapView();
+        mMap = mContext.getMap();
         mHandler = createHandler(mContext);
-        mStarOverlays = new Vector<MyPlaceOverlay<Star>>();
-        mMapItemOverlays = new Vector<MyPlaceOverlay<MapItem>>();
         loadData();
     }
 
@@ -195,23 +187,20 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
      */
     protected void onLoadingStarsImpl() {
         try {
-            Star[] stars = getServerConnection().getStars();
-            onLoadedStars(stars);
+            final Star[] stars = getServerConnection().getStars();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    onLoadedStars(stars);
+                }
+            });
         } catch (Exception e) {
             showMessage(e);
         }
     }
 
-    /**
-     * Returns list of map overlays
-     *
-     * @return
-     */
-    protected List<Overlay> getOverlayList() {
-        return mContext.getMapView().getOverlays();
-    }
-
-    public boolean onMapClick(GeoPoint location) {
+    @Override
+    public void onMapClick(LatLng location) {
         int state = getState();
         boolean result = (state == STATE_ADDING_NEW_ITEM || state == STATE_ADDING_NEW_STAR);
         if (result) {
@@ -219,22 +208,21 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
                 showSmileyDialog(location);
             } else if (state == STATE_ADDING_NEW_ITEM) {
                 MapItem mi = new MapItem();
-                mi.setX(location.getLongitudeE6() / M.COORD_HELP_MAPPER);
-                mi.setY(location.getLatitudeE6() / M.COORD_HELP_MAPPER);
+                mi.setX(location.longitude);
+                mi.setY(location.latitude);
                 showMapItemActivity(mi);
             }
             setState(STATE_DEFAULT);
         }
-        return result;
     }
 
-    protected void showSmileyDialog(GeoPoint location) {
+    protected void showSmileyDialog(LatLng location) {
         SmileyDialog sd = new SmileyDialog(mContext, location);
         sd.setOnClickListener(new Dialog.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 SmileyDialog sd = (SmileyDialog) dialog;
-                GeoPoint location = sd.getGeoPoint();
+                LatLng location = sd.getLatLng();
 //				showMessage(String.format("ic:%S x:%s y:%s", which, location.getLatitudeE6()/M.COORD_HELP_MAPPER,location.getLongitudeE6()/M.COORD_HELP_MAPPER));
                 onAddNewStar(location, which);
             }
@@ -248,24 +236,24 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
         sd.show();
     }
 
-    public void onAddNewStar(final GeoPoint location, final int starIconId) {
+    public void onAddNewStar(final LatLng location, final int starIconId) {
         setState(STATE_DEFAULT);
         new Thread(new Runnable() {
             @Override
             public void run() {
                 final Star s = new Star();
-                s.setX(location.getLongitudeE6() / M.COORD_HELP_MAPPER);
-                s.setY(location.getLatitudeE6() / M.COORD_HELP_MAPPER);
+                s.setX(location.longitude);
+                s.setY(location.latitude);
                 s.setType(Star.getStarTypeByIconId(starIconId));
                 Star saved = getServerConnection().save(s);
                 s.setId(saved.getId());
                 mContext.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        onLoadedStars(new Star[]{s});/*mMapView.invalidate();*/
+                        onLoadedStars(new Star[]{s});/*mMap.invalidate();*/
                     }
                 });
-                mHandler.sendEmptyMessage(PresenterHandler.INVALIDATE_MAP);
+//                mHandler.sendEmptyMessage(PresenterHandler.INVALIDATE_MAP);
             }
         }, "onAddNewStar").start();
     }
@@ -279,39 +267,42 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
         if (stars.length == 0) {
             return;
         }
-        List<Overlay> mapOverlays = getOverlayList();
-        synchronized (mapOverlays) {
-            for (Star s : stars) {
-                MyPlaceOverlay<Star> so = new MyPlaceOverlay<Star>(mContext, s);
-                so.setTapListener(new MyPlaceOverlay.OnTapListener<Star>() {
-                    @SuppressWarnings("unchecked")
-                    @Override
-                    public void onTap(MyPlaceOverlay<?> item) {
-                        onStarTap((MyPlaceOverlay<Star>) item);
-                    }
-                }
-                );
-                mapOverlays.add(so);
-                mStarOverlays.add(so);
-            }
+        //clean it
+//        for (Marker m : mStars) {
+//            mMarkers.remove(m);
+//            m.remove();
+//        }
+
+        for (Star s : stars) {
+            MarkerOptions mo = createStarMarker(s);
+            Marker marker = mMap.addMarker(mo);
+            mStars.add(marker);
+            mMarkers.put(marker, s);
         }
-        mHandler.sendEmptyMessage(PresenterHandler.INVALIDATE_MAP);
+    }
+
+    private MarkerOptions createStarMarker(Star s) {
+        final MarkerOptions mo = new MarkerOptions().position(new LatLng(s.getY(), s.getX()))
+                .title(s.getTitle())
+                .icon(BitmapDescriptorFactory.fromResource(s.getIconResId()))
+                .visible(true);
+        return mo;
     }
 
     /**
      * Shows edit dialog to update note
      *
-     * @param overlay
+     * @param star
      * @return
      */
-    public boolean onStarTap(MyPlaceOverlay<Star> overlay) {
-        showStarDialog(overlay);
+    public boolean onStarTap(Marker star) {
+        showStarDialog(star);
         return true;
     }
 
-    protected void showStarDialog(final MyPlaceOverlay<Star> overlay) {
-        final Star star = overlay.getObject();
+    protected void showStarDialog(final Marker starMarker) {
         final EditText mEditText = new EditText(mContext);
+        final Star star = (Star) mMarkers.get(starMarker);
         final AlertDialog ad = DialogBuilder.getStarDialog(mContext, mEditText, star);
         //update handler
         ad.setButton(DialogInterface.BUTTON_POSITIVE, mContext.getString(R.string.lblOK), new DialogInterface.OnClickListener() {
@@ -341,18 +332,20 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 showProgressBar();
-                mStarOverlays.remove(overlay);
-                getOverlayList().remove(overlay);
-                mMapView.invalidate();
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
                         try {
                             getServerConnection().delete(star);
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    starMarker.remove();
+                                    mStars.remove(star);
+                                }
+                            });
                         } catch (Exception e) {
                             showMessage(e);
-                            mStarOverlays.add(overlay);
-                            getOverlayList().add(overlay);
                         }
                         hideProgressBar();
                     }
@@ -363,11 +356,13 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
         ad.show();
     }
 
-    public boolean onMapItemTap(MyPlaceOverlay<MapItem> overlay) {
+    public boolean onMapItemTap(Marker marker) {
         MapItemPanel mip = mContext.getMapItemPanel();
-        mip.setMapItem(overlay.getObject());
+        MapItem item = (MapItem) mMarkers.get(marker);
+        mip.setMapItem(item);
         mContext.getMapItemPanel().show();
-        mMapView.getController().animateTo(overlay.getCenter());
+        mMap.animateCamera(CameraUpdateFactory.newLatLng(item.getLatLng()));
+//        mMap.getController().animateTo(overlay.getCenter());
         return true;
     }
 
@@ -378,29 +373,39 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
     protected void onLoadingMapItemsImpl() {
         try {
 //			MapItem[] items = getServerConnection().getMapItems(14, 55, 16, 50);
-            MapItem[] items = getServerConnection().getMapItems(-180, 90, 180, -90);
-            onLoadedMapItems(items);
+            final MapItem[] items = getServerConnection().getMapItems(-180, 90, 180, -90);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    onLoadedMapItems(items);
+                }
+            });
         } catch (Exception e) {
             showMessage(e);
         }
     }
 
     protected void addMyLocationOverlay(double x, double y) {
-        List<Overlay> mapOverlays = getOverlayList();
-        if (mMyLocationOverlay != null) {
-            mapOverlays.remove(mMyLocationOverlay);
+        if (mMyLocation != null) {
+            mMyLocation.remove();
         }
-        mMyLocationOverlay = new MyPlaceOverlay<MyPosition>(mContext, new MyPosition(x, y));
-        mapOverlays.add(mMyLocationOverlay);
+
+        MarkerOptions mo = createMyLocationMarker(x, y);
+        mMyLocation = mMap.addMarker(mo);
+    }
+
+    private MarkerOptions createMyLocationMarker(double x, double y) {
+        final MarkerOptions mo = new MarkerOptions().position(new LatLng(y, x))
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_launcher))
+                .visible(true);
+        return mo;
     }
 
     protected void removeMyLocationOverlay() {
-        if (mMyLocationOverlay != null) {
-            List<Overlay> mapOverlays = getOverlayList();
-            mapOverlays.remove(mMyLocationOverlay);
+        if (mMyLocation != null) {
+            mMyLocation.remove();
         }
-        mMyLocationOverlay = null;
-        mMapView.invalidate();
+        mMyLocation = null;
     }
 
     /**
@@ -413,23 +418,25 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
             return;
         }
 
-        List<Overlay> mapOverlays = getOverlayList();
-        synchronized (mapOverlays) {
-            for (MapItem s : items) {
-                MyPlaceOverlay<MapItem> so = new MyPlaceOverlay<MapItem>(mContext, s);
-                so.setTapListener(new MyPlaceOverlay.OnTapListener<MapItem>() {
-                    @SuppressWarnings("unchecked")
-                    @Override
-                    public void onTap(MyPlaceOverlay<?> item) {
-                        onMapItemTap((MyPlaceOverlay<MapItem>) item);
-                    }
-                }
-                );
-                mMapItemOverlays.add(so);
-                mapOverlays.add(so);
-            }
+//        for(Marker m : mPlaces){
+//            mMarkers.remove(m);
+//            m.remove();
+//        }
+
+        for (MapItem item : items) {
+            MarkerOptions mo = createMapItemMarker(item);
+            Marker marker = mMap.addMarker(mo);
+            mMarkers.put(marker, item);
+            mPlaces.add(marker);
         }
-        mHandler.sendEmptyMessage(PresenterHandler.INVALIDATE_MAP);
+    }
+
+    private MarkerOptions createMapItemMarker(MapItem item) {
+        final MarkerOptions mo = new MarkerOptions().position(new LatLng(item.getY(), item.getX()))
+                .title(item.getTitle())
+                .icon(BitmapDescriptorFactory.fromResource(item.getIconResId()))
+                .visible(true);
+        return mo;
     }
 
 
@@ -523,10 +530,8 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
             List<Address> result = getLocations(query);
             if (result.size() == 1) {
                 Address a = result.get(0);
-                GeoPoint gp = new GeoPoint((int) (a.getLatitude() * M.COORD_HELP_MAPPER),
-                        (int) (a.getLongitude() * M.COORD_HELP_MAPPER));
-                mMapView.getController().setCenter(gp);
-                mMapView.getController().setZoom(10);
+                CameraUpdate cu = CameraUpdateFactory.newLatLngZoom(new LatLng(a.getLatitude(), a.getLongitude()), 10);
+                mMap.animateCamera(cu);
             } else {
                 Toast.makeText(mContext, "Found " + result.size(), Toast.LENGTH_SHORT).show();
             }
@@ -563,10 +568,24 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
         });
     }
 
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        MapElement me = mMarkers.get(marker);
+        if(me != null){
+            if(me instanceof Star){
+                onStarTap(marker);
+            }else if( me instanceof MapItem){
+                onMapItemTap(marker);
+            }
+
+            return true;
+        }
+        return false;
+    }
+
     protected class PresenterHandler extends Handler {
         public static final int HIDE_PROGRESSBAR = 1;
         public static final int REMOVE_MYLOCATION_OVERLAY = 2;
-        public static final int INVALIDATE_MAP = 3;
 
         public PresenterHandler(Context c) {
             super(c.getMainLooper());
@@ -585,9 +604,6 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
                     break;
                 case REMOVE_MYLOCATION_OVERLAY:
                     removeMyLocationOverlay();
-                    break;
-                case INVALIDATE_MAP:
-                    mMapView.invalidate();
                     break;
                 default:
                     super.handleMessage(msg);
@@ -623,29 +639,32 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
     }
 
     protected void onDeletedMapItem(MapItem deleted) {
-        for (MyPlaceOverlay<MapItem> item : mMapItemOverlays) {
-            MapItem onMap = item.getObject();
-            if (onMap.getId() == deleted.getId()) {
-                getOverlayList().remove(item);
-                mMapItemOverlays.remove(item);
-                mMapView.invalidate();
-                mContext.getMapItemPanel().hide();
-                break;
-            }
-        }
+
+        //FIXME:
+//        for (MyPlaceOverlay<MapItem> item : mMapItemOverlays) {
+//            MapItem onMap = item.getObject();
+//            if (onMap.getId() == deleted.getId()) {
+//                getOverlayList().remove(item);
+//                mMapItemOverlays.remove(item);
+////                mMap.invalidate();
+//                mContext.getMapItemPanel().hide();
+//                break;
+//            }
+//        }
     }
 
     protected void onUpdatedMapItem(MapItem oldOne, MapItem newOne) {
-        for (MyPlaceOverlay<MapItem> item : mMapItemOverlays) {
-            MapItem onMap = item.getObject();
-            if (onMap.getId() == oldOne.getId()) {
-                getOverlayList().remove(item);
-                mMapItemOverlays.remove(item);
-                break;
-            }
-        }
-        onAddedMapItem(newOne);
-        mContext.getMapItemPanel().setMapItem(newOne);
+        //FIXME:
+//        for (MyPlaceOverlay<MapItem> item : mMapItemOverlays) {
+//            MapItem onMap = item.getObject();
+//            if (onMap.getId() == oldOne.getId()) {
+//                getOverlayList().remove(item);
+//                mMapItemOverlays.remove(item);
+//                break;
+//            }
+//        }
+//        onAddedMapItem(newOne);
+//        mContext.getMapItemPanel().setMapItem(newOne);
     }
 
     protected void onAddedMapItem(MapItem newOne) {

@@ -5,14 +5,15 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.maps.GeoPoint;
 import com.scurab.android.myplaces.R;
 
 public class SmileyDialog extends Dialog {
     private OnClickListener mClickListener;
-    private GeoPoint mGeoPoint;
+    private LatLng mGeoPoint;
 
-    public SmileyDialog(Context context, GeoPoint gp) {
+    public SmileyDialog(Context context, LatLng gp) {
         super(context);
         if (gp == null) {
             throw new NullPointerException("GeoPoint must be set!");
@@ -52,7 +53,7 @@ public class SmileyDialog extends Dialog {
         });
     }
 
-    public GeoPoint getGeoPoint() {
+    public LatLng getLatLng() {
         return mGeoPoint;
     }
 

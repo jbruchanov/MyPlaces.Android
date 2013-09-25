@@ -3,6 +3,7 @@ package com.scurab.android.myplaces.presenter;
 import android.app.Activity;
 import android.location.Address;
 import android.location.Location;
+import android.os.Handler;
 import android.widget.Toast;
 import com.scurab.android.myplaces.MyPlacesApplication;
 import com.scurab.android.myplaces.activity.MainActivity;
@@ -58,7 +59,7 @@ public abstract class BasePresenter {
     }
 
     public void showMessage(final String msg) {
-        mContext.runOnUiThread(new Runnable() {
+        runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 Toast.makeText(mContext, msg, Toast.LENGTH_LONG).show();
@@ -70,4 +71,7 @@ public abstract class BasePresenter {
         showMessage(t.getMessage());
     }
 
+    public void runOnUiThread(Runnable runnable){
+        mContext.runOnUiThread(runnable);
+    }
 }
