@@ -93,8 +93,20 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
                 onMoreButtonClick(item);
             }
         });
+
+        mContext.getReloadButton().setOnClickListener(new View.OnClickListener() { @Override public void onClick(View v) { onReloadClick(); } });
         mContext.setActivityOnResultListener(this);
         mContext.setActivityKeyListener(this);
+    }
+
+    private void onReloadClick() {
+        loadData();
+        for(Marker m : mMarkers.keySet()){
+            m.remove();
+        }
+        mMarkers.clear();
+        mStars.clear();
+        mPlaces.clear();
     }
 
     public void onMyLocationClick() {
@@ -153,6 +165,7 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
     }
 
     protected void loadData() {
+        showProgressBar();
         onLoadingStars();
         onLoadingMapItems();
     }
@@ -267,11 +280,6 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
         if (stars.length == 0) {
             return;
         }
-        //clean it
-//        for (Marker m : mStars) {
-//            mMarkers.remove(m);
-//            m.remove();
-//        }
 
         for (Star s : stars) {
             MarkerOptions mo = createStarMarker(s);
@@ -414,21 +422,15 @@ public class MainActivityPresenter15 extends BasePresenter implements ActivityOp
      * @param items
      */
     public void onLoadedMapItems(MapItem[] items) {
-        if (items.length == 0) {
-            return;
+        if (items.length != 0) {
+            for (MapItem item : items) {
+                MarkerOptions mo = createMapItemMarker(item);
+                Marker marker = mMap.addMarker(mo);
+                mMarkers.put(marker, item);
+                mPlaces.add(marker);
+            }
         }
-
-//        for(Marker m : mPlaces){
-//            mMarkers.remove(m);
-//            m.remove();
-//        }
-
-        for (MapItem item : items) {
-            MarkerOptions mo = createMapItemMarker(item);
-            Marker marker = mMap.addMarker(mo);
-            mMarkers.put(marker, item);
-            mPlaces.add(marker);
-        }
+        hideProgressBar();
     }
 
     private MarkerOptions createMapItemMarker(MapItem item) {
